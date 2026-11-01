@@ -16,13 +16,19 @@ import { CheckoutModal, VoucherData } from './components/CheckoutModal';
 import { VoucherModal } from './components/VoucherModal';
 import { BANNER_PRESETS } from './data/summitData';
 
+const OFFICIAL_BANNER_URL = 'https://i.postimg.cc/nzjjTH3B/BANNER-SITE-WOHRSHOP-DRAGON.png';
+
 export default function App() {
   const [currentBanner, setCurrentBanner] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('kairos_active_banner');
-      return saved || BANNER_PRESETS[0].url;
+      // If user had an older preset or no banner, default to the official dragon banner
+      if (!saved || saved.startsWith('preset://')) {
+        return OFFICIAL_BANNER_URL;
+      }
+      return saved;
     } catch {
-      return BANNER_PRESETS[0].url;
+      return OFFICIAL_BANNER_URL;
     }
   });
 

@@ -13,31 +13,37 @@ export const BannerGraphic: React.FC<BannerGraphicProps> = ({
   showTitleOverlay = false,
   compact = false,
 }) => {
-  const isCustomImage = bannerUrl.startsWith('data:') || bannerUrl.startsWith('http://') || bannerUrl.startsWith('https://');
+  const isCustomImage =
+    bannerUrl.startsWith('data:') ||
+    bannerUrl.startsWith('http://') ||
+    bannerUrl.startsWith('https://') ||
+    bannerUrl.startsWith('/assets/');
 
   if (isCustomImage) {
     return (
-      <div className={`relative overflow-hidden bg-[#0A0A0A] ${className}`}>
+      <div className={`relative overflow-hidden bg-[#0A0A0A] flex items-center justify-center ${className}`}>
         <img
           src={bannerUrl}
           alt="Banner Oficial WORKSHOP - T-Forcetreining"
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
+          loading="eager"
+          decoding="async"
           onError={(e) => {
-            // Fallback if custom URL fails
-            (e.target as HTMLElement).style.display = 'none';
+            const target = e.currentTarget as HTMLImageElement;
+            if (!target.src.includes('banner-dragon.png')) {
+              target.src = '/assets/banner-dragon.png';
+            }
           }}
         />
-        {/* Subtle dark gradient scrim for contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-[#0A0A0A]/40 to-transparent pointer-events-none" />
-        
+
         {showTitleOverlay && (
-          <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 pointer-events-none">
+          <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 pointer-events-none bg-gradient-to-t from-[#0A0A0A]/85 via-transparent to-transparent">
             <span className="text-xs uppercase tracking-widest text-[#E50914] font-semibold">
-              WORKSHOP - T-FORCETREINING 2026 · SÃO PAULO
+              WORKSHOP - T-FORCETREINING · 1º CONGRESSO
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mt-1">
-              TECNOLOGIA, DESIGN & FUTURO
+              O MUNDO DA MUSCULAÇÃO
             </h2>
           </div>
         )}

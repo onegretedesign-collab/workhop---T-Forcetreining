@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Speaker } from '../data/summitData';
 import { SpeakerPosterCard } from './SpeakerPosterCard';
-import { ChevronLeft, ChevronRight, X, Calendar, Share2, Check, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Calendar, Share2, Check, ArrowRight, Instagram } from 'lucide-react';
 
 interface SpeakerDetailModalProps {
   speaker: Speaker | null;
@@ -150,6 +150,20 @@ END:VCALENDAR`;
             >
               {speaker.name}
             </h2>
+
+            {/* Instagram handle right below name */}
+            {speaker.instagram && (
+              <a
+                href={`https://instagram.com/${speaker.instagram.replace('@', '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm sm:text-base font-bold font-mono text-[#E50914] hover:text-white transition-colors bg-[#E50914]/10 hover:bg-[#E50914] border border-[#E50914]/30 px-3.5 py-1.5 rounded-full w-max mt-1"
+                title={`Ver perfil ${speaker.instagram} no Instagram`}
+              >
+                <Instagram className="w-4 h-4" />
+                <span>{speaker.instagram}</span>
+              </a>
+            )}
 
             {/* Role & Company */}
             <p className="text-sm font-semibold text-neutral-300 font-mono">

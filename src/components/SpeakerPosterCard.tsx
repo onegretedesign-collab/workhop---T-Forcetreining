@@ -123,6 +123,12 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
           {speaker.name}
         </h3>
 
+        {speaker.instagram && (
+          <span className="text-xs sm:text-sm font-bold text-[#E50914] font-mono block mt-1 tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+            {speaker.instagram}
+          </span>
+        )}
+
         <div className="flex items-center justify-between text-xs text-neutral-300 mt-2 font-mono">
           <span className="text-[11px] truncate max-w-[200px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
             {speaker.company}
