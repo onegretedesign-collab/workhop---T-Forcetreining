@@ -1,0 +1,6 @@
+{
+  "name": "KAIROS Summit 2026 - Tecnologia, Design & Futuro",
+  "description": "Evento de ponta com 6 palestrantes, logística de crachás nominais, checkout simulado Mercado Pago e emissão instantânea de voucher digital com banner oficial.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
