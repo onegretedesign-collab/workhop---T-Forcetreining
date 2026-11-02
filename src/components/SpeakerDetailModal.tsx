@@ -56,7 +56,7 @@ PRODID:-//WORKSHOP - T-FORCETREINING 2026//PT-BR
 BEGIN:VEVENT
 SUMMARY:${speaker.talkTitle} - ${speaker.name}
 DESCRIPTION:${speaker.talkDescription}
-LOCATION:WTC Events Center, Auditório Master Pro - São Paulo
+LOCATION:Academia Dragon, Palco Principal - São Paulo
 STATUS:CONFIRMED
 END:VEVENT
 END:VCALENDAR`;

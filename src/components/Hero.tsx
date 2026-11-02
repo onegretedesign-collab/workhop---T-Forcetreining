@@ -1,6 +1,7 @@
 import React from 'react';
 import { SUMMIT_EVENT } from '../data/summitData';
 import { BannerGraphic } from './BannerGraphic';
+import { AddToCalendarButton } from './AddToCalendarButton';
 import { Calendar, MapPin, Clock, ArrowRight, Sparkles } from 'lucide-react';
 
 interface HeroProps {
@@ -36,7 +37,7 @@ export const Hero: React.FC<HeroProps> = ({
 
 
         {/* Main Headline - Official Logo replacing text in matching size */}
-        <div className="max-w-4xl relative z-10">
+        <div className="max-w-4xl relative z-30">
           <h1 className="sr-only">
             1° Congresso - O Mundo da Musculação: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples.
           </h1>
@@ -58,7 +59,7 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* Action CTA */}
-          <div className="mt-8 flex items-center">
+          <div className="mt-8 flex flex-wrap items-center gap-3.5">
             <button
               type="button"
               onClick={onOpenCheckout}
@@ -67,6 +68,8 @@ export const Hero: React.FC<HeroProps> = ({
               <span>Garanta já sua vaga</span>
               <ArrowRight className="w-4 h-4" />
             </button>
+
+            <AddToCalendarButton />
           </div>
         </div>
 
@@ -75,22 +78,6 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-[#E50914]/30 via-neutral-800 to-[#E50914]/20 blur-xl opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none" />
 
           <div className="relative rounded-2xl overflow-hidden border border-neutral-800 bg-[#0E0E0E] shadow-2xl">
-            {/* Top Toolbar of the banner */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-3 bg-[#141414] border-b border-neutral-800 text-xs">
-              <div className="flex items-center gap-2 text-neutral-400">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#E50914] animate-pulse" />
-                <span className="font-mono text-white font-medium">
-                  BANNER OFICIAL · WORKSHOP - T-FORCETREINING
-                </span>
-                <span className="hidden sm:inline font-mono text-[11px] text-neutral-500">
-                  (1280 × 720px · HD)
-                </span>
-              </div>
-              <span className="text-xs font-mono text-neutral-400">
-                PALCO PRINCIPAL · DRAGON
-              </span>
-            </div>
-
             {/* Banner Graphic Viewport configured in 16:9 ratio */}
             <div className="w-full aspect-[16/9] relative bg-black">
               <BannerGraphic
@@ -130,10 +117,10 @@ export const Hero: React.FC<HeroProps> = ({
                 Localização
               </span>
               <span className="text-sm font-bold text-white">
-                WTC Events Center · SP
+                Academia Dragon · SP
               </span>
               <p className="text-xs text-neutral-400 mt-0.5">
-                Auditório Master Pro com infraestrutura acústica imersiva.
+                Palco principal com infraestrutura acústica imersiva.
               </p>
             </div>
           </div>

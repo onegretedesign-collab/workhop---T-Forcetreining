@@ -34,13 +34,14 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onOpenCheckout }
             <div className="lg:w-1/2 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-neutral-800 pb-8 lg:pb-0 lg:pr-8">
               <div>
                 <span className="text-xs uppercase tracking-widest text-[#E50914] font-bold">
-                  LOTE ÚNICO EXCLUSIVO
+                  PASSAPORTE EXCLUSIVO
                 </span>
                 <h3 className="text-2xl font-bold text-white font-display mt-1">
-                  Passaporte Presencial WORKSHOP - T-Forcetreining
+                  Congresso Presencial
+                  <span className="block">O Mundo da Musculação</span>
                 </h3>
                 <p className="text-xs text-neutral-400 mt-1">
-                  Acesso total ao evento no WTC Events Center em São Paulo.
+                  Acesso total ao evento na Academia Dragon.
                 </p>
 
                 {/* Prominent nominal badge callout box */}

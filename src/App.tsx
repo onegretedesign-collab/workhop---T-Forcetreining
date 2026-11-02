@@ -53,7 +53,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-neutral-100 selection:bg-[#E50914] selection:text-white flex flex-col font-sans">
+    <div className="min-h-screen bg-[#0A0A0A] text-neutral-100 selection:bg-[#E50914] selection:text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw]">
       {/* Top Header */}
       <Header
         onOpenCheckout={() => setIsCheckoutOpen(true)}

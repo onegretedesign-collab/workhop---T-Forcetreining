@@ -228,7 +228,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         <div className="px-6 sm:px-8 py-3.5 bg-neutral-950 border-b border-neutral-800/80 flex items-center justify-between text-xs font-mono">
           <div className="flex items-center gap-2 text-neutral-300">
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>Passaporte Presencial All-Access (Crachá Físico Nominal)</span>
+            <span>Congresso Presencial · O Mundo da Musculação (Crachá Físico Nominal)</span>
           </div>
           <span className="text-white font-bold text-sm">
             {formatCurrency(SUMMIT_EVENT.price)}
