@@ -103,12 +103,12 @@ export const AddToCalendarButton: React.FC<{ className?: string }> = ({ classNam
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="true"
         aria-expanded={isOpen}
-        className="inline-flex items-center justify-center gap-2 px-5 py-4 text-sm sm:text-base font-semibold text-neutral-200 hover:text-white bg-neutral-900/90 hover:bg-neutral-800 border border-neutral-700/80 hover:border-neutral-600 rounded-xl transition-all shadow-lg backdrop-blur-sm group"
+        className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3.5 text-xs sm:text-sm font-semibold text-neutral-200 hover:text-white bg-neutral-900/90 hover:bg-neutral-800 border border-neutral-700/80 hover:border-neutral-600 rounded-xl transition-all shadow-lg backdrop-blur-sm group whitespace-nowrap shrink-0 cursor-pointer"
       >
-        <Calendar className="w-4 h-4 text-[#E50914] group-hover:scale-110 transition-transform" />
+        <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#E50914] group-hover:scale-110 transition-transform" />
         <span>Salvar na Agenda</span>
         <ChevronDown
-          className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${
+          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-neutral-400 transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
@@ -116,7 +116,7 @@ export const AddToCalendarButton: React.FC<{ className?: string }> = ({ classNam
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute left-0 mt-2.5 w-72 sm:w-80 rounded-2xl bg-[#141414] border border-neutral-700 shadow-[0_20px_50px_rgba(0,0,0,0.85)] p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 sm:left-0 mt-2.5 w-72 sm:w-80 rounded-2xl bg-[#141414] border border-neutral-700 shadow-[0_20px_50px_rgba(0,0,0,0.85)] p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
           <div className="px-3 py-2 border-b border-neutral-800/80 mb-1">
             <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 block font-semibold">
               Adicionar data e hora ({SUMMIT_EVENT.date})

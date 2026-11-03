@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { storage, db } from '../firebase';
-import { Camera, Upload, CheckCircle2, AlertCircle, Loader2, ArrowLeft, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { db } from '../firebase';
+import {
+  Camera,
+  Upload,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  ArrowLeft,
+  Sparkles,
+  Image as ImageIcon,
+  Check
+} from 'lucide-react';
 
 interface UploadViewProps {
   onBackToMural?: () => void;
 }
 
-// Helper to compress image client-side to ensure quick uploads
-async function compressImage(file: File, maxDim = 1600, quality = 0.85): Promise<Blob> {
+// Client-side image compressor: scales to max 960px and encodes to high-quality JPEG Data URL (< 150KB)
+async function compressImageToDataUrl(file: File, maxDim = 960, quality = 0.75): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -30,34 +39,23 @@ async function compressImage(file: File, maxDim = 1600, quality = 0.85): Promise
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          resolve(file);
+          reject(new Error('Falha ao processar imagem no navegador.'));
           return;
         }
+
+        // Fill white background for transparent PNGs
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+
         ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob(
-          (blob) => {
-            if (blob) resolve(blob);
-            else resolve(file);
-          },
-          'image/jpeg',
-          quality
-        );
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
       };
-      img.onerror = reject;
+      img.onerror = () => reject(new Error('Falha ao ler os dados da foto selecionada.'));
       img.src = e.target?.result as string;
     };
-    reader.onerror = reject;
+    reader.onerror = () => reject(new Error('Erro ao carregar o arquivo selecionado.'));
     reader.readAsDataURL(file);
-  });
-}
-
-// Convert blob to DataURL fallback if Storage bucket rejects unauthenticated uploads
-function blobToDataURL(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
   });
 }
 
@@ -67,6 +65,7 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
   const [author, setAuthor] = useState('');
   const [caption, setCaption] = useState('');
   const [progress, setProgress] = useState(0);
+  const [progressStage, setProgressStage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,57 +90,27 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
     }
 
     setIsUploading(true);
-    setProgress(10);
+    setProgress(20);
+    setProgressStage('Otimizando imagem...');
     setError(null);
 
     try {
-      // 1. Compress image for mobile efficiency
-      const compressedBlob = await compressImage(file, 1600, 0.85);
-      setProgress(25);
+      // 1. Client-side compression to lightweight Data URL (30KB - 90KB)
+      const dataUrl = await compressImageToDataUrl(file, 960, 0.75);
 
-      let downloadURL = '';
+      setProgress(60);
+      setProgressStage('Publicando na galeria do site...');
 
-      // 2. Try Firebase Storage upload
-      try {
-        const sanitizedFileName = `${Date.now()}_${file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_.-]/g, '')}`;
-        const storageRef = ref(storage, `event_photos/${sanitizedFileName}`);
-        const uploadTask = uploadBytesResumable(storageRef, compressedBlob);
-
-        downloadURL = await new Promise<string>((resolve, reject) => {
-          uploadTask.on(
-            'state_changed',
-            (snapshot) => {
-              const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 60) + 25;
-              setProgress(pct);
-            },
-            (err) => reject(err),
-            async () => {
-              try {
-                const url = await getDownloadURL(uploadTask.snapshot.ref);
-                resolve(url);
-              } catch (urlErr) {
-                reject(urlErr);
-              }
-            }
-          );
-        });
-      } catch (storageErr) {
-        console.warn('Storage upload fallback:', storageErr);
-        // Fallback to high-efficiency data URL if Storage bucket is in default rules
-        downloadURL = await blobToDataURL(compressedBlob);
-      }
-
-      setProgress(90);
-
-      // 3. Record in Firestore 'photos' collection
+      // 2. Direct Firestore storage with serverTimestamp
       await addDoc(collection(db, 'photos'), {
-        imageUrl: downloadURL,
-        author: author.trim() || 'Convidado',
+        imageUrl: dataUrl,
+        author: author.trim() || 'Participante',
         caption: caption.trim() || '',
         createdAt: serverTimestamp(),
       });
 
       setProgress(100);
+      setProgressStage('Foto publicada com sucesso!');
       setIsSuccess(true);
       setFile(null);
       setPreview(null);
@@ -150,7 +119,7 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
     } catch (err: unknown) {
       console.error('Error uploading photo:', err);
       const msg = err instanceof Error ? err.message : String(err);
-      setError(`Erro ao registrar foto na galeria: ${msg}`);
+      setError(`Erro ao publicar foto na galeria: ${msg}`);
     } finally {
       setIsUploading(false);
     }
@@ -193,15 +162,26 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
             <div className="flex-1">
               <p className="font-bold text-sm">Foto enviada com sucesso!</p>
               <p className="text-xs text-emerald-300/90 mt-0.5">
-                Sua foto já foi publicada na galeria do congresso no site.
+                Sua foto já está visível na galeria do site para todos os participantes.
               </p>
-              <button
-                type="button"
-                onClick={() => setIsSuccess(false)}
-                className="mt-3 text-xs font-semibold text-emerald-400 hover:underline inline-flex items-center gap-1"
-              >
-                <span>Enviar outra foto</span>
-              </button>
+              <div className="mt-3 flex items-center gap-3">
+                {onBackToMural && (
+                  <button
+                    type="button"
+                    onClick={onBackToMural}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow cursor-pointer inline-flex items-center gap-1"
+                  >
+                    <span>Ver na Galeria do Site</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsSuccess(false)}
+                  className="text-xs font-semibold text-emerald-400 hover:underline cursor-pointer"
+                >
+                  Enviar outra foto
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -241,52 +221,53 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
               accept="image/*"
               capture="environment"
               onChange={handleFileChange}
-              className="hidden"
               disabled={isUploading}
+              className="sr-only"
             />
           </label>
 
           <div>
-            <label className="block text-xs font-medium text-neutral-300 mb-1.5 font-mono">
+            <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
               Seu Nome (opcional)
             </label>
             <input
               type="text"
+              placeholder="Ex: Carlos Silva ou @carlostreino"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              placeholder="Ex: Carlos Silva ou @carlostreino"
+              maxLength={50}
               disabled={isUploading}
-              maxLength={80}
-              className="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm focus:outline-none focus:border-[#E50914] text-neutral-100 placeholder:text-neutral-600 transition-colors"
+              className="w-full px-4 py-2.5 bg-neutral-900 border border-neutral-700/80 focus:border-[#E50914] focus:ring-1 focus:ring-[#E50914] rounded-xl text-white placeholder-neutral-500 text-sm outline-none transition disabled:opacity-50"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-neutral-300 mb-1.5 font-mono">
+            <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
               Legenda (opcional)
             </label>
             <input
               type="text"
+              placeholder="Ex: Presença confirmada no 1º Congresso!"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              placeholder="Ex: Presença confirmada no 1º Congresso!"
+              maxLength={150}
               disabled={isUploading}
-              maxLength={200}
-              className="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm focus:outline-none focus:border-[#E50914] text-neutral-100 placeholder:text-neutral-600 transition-colors"
+              className="w-full px-4 py-2.5 bg-neutral-900 border border-neutral-700/80 focus:border-[#E50914] focus:ring-1 focus:ring-[#E50914] rounded-xl text-white placeholder-neutral-500 text-sm outline-none transition disabled:opacity-50"
             />
           </div>
 
           {isUploading && (
-            <div className="space-y-1.5 pt-1">
-              <div className="w-full bg-neutral-800 rounded-full h-2.5 overflow-hidden">
+            <div className="space-y-1.5 py-1">
+              <div className="flex justify-between text-xs text-neutral-400 font-mono">
+                <span>{progressStage}</span>
+                <span>{progress}%</span>
+              </div>
+              <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
                 <div
-                  className="bg-[#E50914] h-full transition-all duration-300 rounded-full"
+                  className="h-full bg-[#E50914] transition-all duration-300 rounded-full"
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="text-[11px] font-mono text-right text-neutral-400">
-                {progress}% enviado
-              </p>
             </div>
           )}
 
@@ -298,7 +279,7 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
             {isUploading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Enviando para a galeria...</span>
+                <span>Publicando na galeria...</span>
               </>
             ) : (
               <>
