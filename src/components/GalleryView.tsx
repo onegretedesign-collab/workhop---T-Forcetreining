@@ -127,7 +127,7 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onGoToSite }) => {
               Nenhuma foto enviada ainda
             </h2>
             <p className="text-sm text-neutral-400 mb-6">
-              Escaneie o QR Code com a câmera do celular para enviar fotos do evento e aparecer no telão principal!
+              Escaneie o QR Code com a câmera do celular para enviar fotos do evento e aparecer na galeria oficial do site!
             </p>
             <button
               type="button"
@@ -200,7 +200,7 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onGoToSite }) => {
               Envie sua foto
             </h2>
             <p className="text-xs text-neutral-400 mb-5 leading-relaxed">
-              Aponte a câmera do celular para o QR Code abaixo para carregar sua foto diretamente no telão:
+              Aponte a câmera do celular para o QR Code abaixo para carregar sua foto diretamente na galeria do site:
             </p>
 
             {/* QR Code Container */}

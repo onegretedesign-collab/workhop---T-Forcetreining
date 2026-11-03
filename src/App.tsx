@@ -13,6 +13,7 @@ import { LogisticsSection } from './components/LogisticsSection';
 import { TicketsSection } from './components/TicketsSection';
 import { FaqSection } from './components/FaqSection';
 import { Footer } from './components/Footer';
+import { GallerySection } from './components/GallerySection';
 import { CheckoutModal, VoucherData } from './components/CheckoutModal';
 import { VoucherModal } from './components/VoucherModal';
 
@@ -65,21 +66,20 @@ export default function App() {
 
   // If in upload mode (guest scanned QR code on mobile)
   if (isUploadMode) {
-    return <UploadView onBackToMural={() => navigateTo('mural')} />;
+    return <UploadView onBackToMural={() => navigateTo(null)} />;
   }
 
-  // If in mural mode (event stage screen / telão)
+  // If in mural mode
   if (isMuralMode) {
     return <GalleryView onGoToSite={() => navigateTo(null)} />;
   }
 
-  // Default: Event Landing Page with direct link to Mural
+  // Default: Event Landing Page with integrated Gallery
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-neutral-100 selection:bg-[#E50914] selection:text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw]">
-      {/* Top Header with live Mural button */}
+      {/* Top Header with live Gallery button */}
       <Header
         onOpenCheckout={() => setIsCheckoutOpen(true)}
-        onOpenMural={() => navigateTo('mural')}
       />
 
       <main className="flex-1">
@@ -90,6 +90,7 @@ export default function App() {
         <SpeakersSection onOpenCheckout={() => setIsCheckoutOpen(true)} />
         <LogisticsSection />
         <TicketsSection onOpenCheckout={() => setIsCheckoutOpen(true)} />
+        <GallerySection onOpenUpload={() => navigateTo('upload')} />
         <FaqSection />
       </main>
 

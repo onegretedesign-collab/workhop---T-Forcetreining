@@ -50,6 +50,13 @@ export const Header: React.FC<HeaderProps> = ({
             Ingresso Nominal
           </a>
           <a
+            href="#galeria"
+            className="hover:text-white hover:text-[#E50914] transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+          >
+            <span>Galeria</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          </a>
+          <a
             href="#faq"
             className="hover:text-white hover:text-[#E50914] transition-colors whitespace-nowrap shrink-0"
           >
@@ -59,21 +66,18 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Primary action */}
         <div className="flex items-center gap-3 shrink-0">
-          {onOpenMural && (
-            <button
-              type="button"
-              onClick={onOpenMural}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 text-xs font-semibold text-neutral-200 hover:text-white transition-colors cursor-pointer"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Mural ao Vivo</span>
-            </button>
-          )}
+          <a
+            href="#galeria"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 text-xs font-semibold text-neutral-200 hover:text-white transition-colors cursor-pointer"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Galeria de Fotos</span>
+          </a>
 
           <button
             type="button"
             onClick={onOpenCheckout}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-lg transition-all shadow-md shadow-[#E50914]/25 whitespace-nowrap shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-lg transition-all shadow-md shadow-[#E50914]/25 whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Ticket className="w-4 h-4" />
             <span>Garanta já sua vaga</span>
@@ -114,6 +118,13 @@ export const Header: React.FC<HeaderProps> = ({
             className="block px-3 py-2 text-sm font-medium text-neutral-200 hover:text-[#E50914] hover:bg-neutral-900 rounded-lg"
           >
             Ingresso Nominal R$ 200
+          </a>
+          <a
+            href="#galeria"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 text-sm font-medium text-neutral-200 hover:text-[#E50914] hover:bg-neutral-900 rounded-lg"
+          >
+            Galeria de Fotos (Ao Vivo)
           </a>
           <a
             href="#faq"

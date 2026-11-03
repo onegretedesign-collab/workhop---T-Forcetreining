@@ -150,7 +150,7 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
     } catch (err: unknown) {
       console.error('Error uploading photo:', err);
       const msg = err instanceof Error ? err.message : String(err);
-      setError(`Erro ao registrar foto no mural: ${msg}`);
+      setError(`Erro ao registrar foto na galeria: ${msg}`);
     } finally {
       setIsUploading(false);
     }
@@ -167,10 +167,10 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
           <button
             type="button"
             onClick={onBackToMural}
-            className="mb-4 inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors"
+            className="mb-4 inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Voltar ao Telão</span>
+            <span>Voltar ao Site do Congresso</span>
           </button>
         )}
 
@@ -183,7 +183,7 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
             Compartilhe sua Foto
           </h1>
           <p className="text-xs sm:text-sm text-neutral-400 mt-1">
-            Sua foto aparecerá instantaneamente no telão principal do evento!
+            Sua foto aparecerá instantaneamente na galeria oficial do site!
           </p>
         </div>
 
@@ -193,7 +193,7 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
             <div className="flex-1">
               <p className="font-bold text-sm">Foto enviada com sucesso!</p>
               <p className="text-xs text-emerald-300/90 mt-0.5">
-                Olhe para o telão da plenária para vê-la aparecer ao vivo.
+                Sua foto já foi publicada na galeria do congresso no site.
               </p>
               <button
                 type="button"
@@ -298,12 +298,12 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
             {isUploading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Enviando para o telão...</span>
+                <span>Enviando para a galeria...</span>
               </>
             ) : (
               <>
                 <Upload className="w-5 h-5" />
-                <span>Enviar para o Telão</span>
+                <span>Enviar para a Galeria</span>
               </>
             )}
           </button>
