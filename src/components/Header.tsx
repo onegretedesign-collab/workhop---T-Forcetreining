@@ -13,16 +13,17 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 w-full bg-[#0A0A0A]/90 backdrop-blur-md border-b border-neutral-800/80 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-8">
-        {/* Brand wordmark: Workshop / T-Forcetreining */}
+        {/* Brand wordmark: 1º CONGRESSO / O Mundo da Musculação */}
         <a
           href="#"
           className="flex flex-col justify-center group tracking-tight whitespace-nowrap shrink-0"
+          aria-label="1º Congresso O Mundo da Musculação"
         >
-          <span className="text-white font-extrabold text-xl sm:text-2xl font-display leading-tight group-hover:text-[#ff4d4d] transition-colors">
-            Workshop
+          <span className="text-white font-extrabold text-lg sm:text-xl font-display leading-tight group-hover:text-[#ff4d4d] transition-colors">
+            1º CONGRESSO
           </span>
-          <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-[#E50914] font-bold uppercase leading-none mt-0.5">
-            T-Forcetreining
+          <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.18em] text-[#E50914] font-bold uppercase leading-none mt-0.5">
+            O Mundo da Musculação
           </span>
         </a>
 

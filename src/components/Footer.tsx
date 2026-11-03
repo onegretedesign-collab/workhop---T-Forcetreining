@@ -1,6 +1,5 @@
 import React from 'react';
-import { SUMMIT_EVENT } from '../data/summitData';
-import { ShieldCheck, MapPin, Mail, ArrowUp } from 'lucide-react';
+import { MapPin, Mail, ArrowUp, ExternalLink } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const scrollToTop = () => {
@@ -13,23 +12,29 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-10 border-b border-neutral-900">
           <div>
             <div className="flex flex-col justify-center tracking-tight">
-              <span className="text-white font-extrabold text-2xl font-display leading-tight">
-                Workshop
+              <span className="text-white font-extrabold text-xl sm:text-2xl font-display leading-tight">
+                1º CONGRESSO
               </span>
-              <span className="text-xs font-mono tracking-[0.2em] text-[#E50914] font-bold uppercase leading-none mt-1">
-                T-Forcetreining
+              <span className="text-xs font-mono tracking-[0.18em] text-[#E50914] font-bold uppercase leading-none mt-1">
+                O Mundo da Musculação
               </span>
             </div>
-            <p className="mt-2 text-xs text-neutral-400 max-w-md leading-relaxed">
-              O principal summit presencial do Brasil para líderes em tecnologia, design de produtos digitais, cibersegurança e infraestrutura quântica.
-            </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 font-mono text-xs">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#E50914]" />
-              <span>{SUMMIT_EVENT.venue} · São Paulo</span>
-            </div>
+            <a
+              href="https://maps.app.goo.gl/9EZESQqbT9r3VxcX7"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-neutral-300 hover:text-white transition-colors group cursor-pointer"
+            >
+              <MapPin className="w-4 h-4 text-[#E50914] group-hover:scale-110 transition-transform shrink-0" />
+              <span className="group-hover:text-white group-hover:underline">
+                Academia Dragon - Quirinópolis / Goiás
+              </span>
+              <ExternalLink className="w-3 h-3 text-neutral-500 group-hover:text-neutral-300" />
+            </a>
+
             <div className="flex items-center gap-2">
               <Mail className="w-4 h-4 text-[#E50914]" />
               <span>contato@tforcetreining.com.br</span>
@@ -38,12 +43,17 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-neutral-400">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>
-              © 2026 WORKSHOP - T-Forcetreining. Todos os direitos reservados. CNPJ 42.109.841/0001-90.
+          <a
+            href="https://www.instagram.com/agenciadgpixel?vrfl=MWRzdnVpb2U5ZGI2Zg=="
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-neutral-400 hover:text-white text-xs font-mono transition-colors inline-flex items-center gap-1.5 group cursor-pointer"
+          >
+            <span>Criado por</span>
+            <span className="font-semibold text-neutral-300 group-hover:text-[#ff4d4d] group-hover:underline transition-colors">
+              AGENCIA DGPIXEL
             </span>
-          </div>
+          </a>
 
           <button
             type="button"

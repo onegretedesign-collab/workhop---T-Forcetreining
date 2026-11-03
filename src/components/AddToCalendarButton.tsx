@@ -33,7 +33,7 @@ export const AddToCalendarButton: React.FC<{ className?: string }> = ({ classNam
 
   // Event details
   const eventTitle = '1º Congresso O Mundo da Musculação - 15hs - Academia Dragon';
-  const eventLocation = 'Academia Dragon, São Paulo - SP';
+  const eventLocation = 'Academia Dragon - Quirinópolis / Goiás';
   const eventDescription =
     '1º Congresso O Mundo da Musculação: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples.\n\nPalestrantes confirmados: Personal Tiago Alves, Marcelo, Dr Guilherme Silverio, Jeriton, Nathálya Souza e Dra Leiliara Borges.\n\nLocal: Academia Dragon - Palco Principal\nInício pontual às 15:00.';
 

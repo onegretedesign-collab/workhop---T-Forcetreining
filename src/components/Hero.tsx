@@ -2,7 +2,7 @@ import React from 'react';
 import { SUMMIT_EVENT } from '../data/summitData';
 import { BannerGraphic } from './BannerGraphic';
 import { AddToCalendarButton } from './AddToCalendarButton';
-import { Calendar, MapPin, Clock, ArrowRight, Sparkles } from 'lucide-react';
+import { MapPin, Clock, ArrowRight } from 'lucide-react';
 
 interface HeroProps {
   bannerUrl: string;
@@ -89,8 +89,8 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
         </div>
 
-        {/* Quick event highlights strip */}
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8 border-t border-neutral-800/80">
+        {/* Quick event highlights strip - 2 cards */}
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 pt-8 border-t border-neutral-800/80">
           <div className="flex items-start gap-3.5 p-4 rounded-xl bg-neutral-900/40 border border-neutral-800">
             <div className="w-10 h-10 rounded-lg bg-[#E50914]/10 border border-[#E50914]/25 flex items-center justify-center text-[#E50914] shrink-0">
               <Clock className="w-5 h-5" />
@@ -99,11 +99,11 @@ export const Hero: React.FC<HeroProps> = ({
               <span className="text-xs uppercase tracking-wider font-mono text-neutral-400 block">
                 Credenciamento
               </span>
-              <span className="text-sm font-bold text-white">
-                07:30 da manhã em ponto
+              <span className="text-sm sm:text-base font-bold text-white">
+                15:00
               </span>
               <p className="text-xs text-neutral-400 mt-0.5">
-                Welcome Coffee e leitura do voucher para emissão do crachá.
+                Coffee break e entrega dos crachás
               </p>
             </div>
           </div>
@@ -116,28 +116,11 @@ export const Hero: React.FC<HeroProps> = ({
               <span className="text-xs uppercase tracking-wider font-mono text-neutral-400 block">
                 Localização
               </span>
-              <span className="text-sm font-bold text-white">
-                Academia Dragon · SP
+              <span className="text-sm sm:text-base font-bold text-white">
+                Academia Dragon
               </span>
               <p className="text-xs text-neutral-400 mt-0.5">
-                Palco principal com infraestrutura acústica imersiva.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3.5 p-4 rounded-xl bg-neutral-900/40 border border-neutral-800">
-            <div className="w-10 h-10 rounded-lg bg-[#E50914]/10 border border-[#E50914]/25 flex items-center justify-center text-[#E50914] shrink-0">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-xs uppercase tracking-wider font-mono text-neutral-400 block">
-                Ingresso All-Access
-              </span>
-              <span className="text-sm font-bold text-white">
-                Crachá Nominal Físico
-              </span>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                Voucher digital instantâneo com checkout Mercado Pago.
+                Palco principal para o 1 Congresso
               </p>
             </div>
           </div>
