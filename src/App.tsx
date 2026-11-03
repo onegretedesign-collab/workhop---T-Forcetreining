@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import GalleryView from './components/GalleryView';
 import UploadView from './components/UploadView';
+import { SalesDashboard } from './components/SalesDashboard/SalesDashboard';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { SpeakersSection } from './components/SpeakersSection';
@@ -51,6 +52,7 @@ export default function App() {
 
   const isUploadMode = mode === 'upload';
   const isMuralMode = mode === 'mural';
+  const isDashboardMode = mode === 'dashboard';
 
   // Landing page state
   const [currentBanner] = useState<string>(OFFICIAL_BANNER_URL);
@@ -63,6 +65,11 @@ export default function App() {
     setIsCheckoutOpen(false);
     setIsVoucherOpen(true);
   };
+
+  // If in sales dashboard mode
+  if (isDashboardMode) {
+    return <SalesDashboard onBackToSite={() => navigateTo(null)} />;
+  }
 
   // If in upload mode (guest scanned QR code on mobile)
   if (isUploadMode) {
@@ -77,9 +84,10 @@ export default function App() {
   // Default: Event Landing Page with integrated Gallery
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-neutral-100 selection:bg-[#E50914] selection:text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw]">
-      {/* Top Header with live Gallery button */}
+      {/* Top Header with live Gallery button and Dashboard button */}
       <Header
         onOpenCheckout={() => setIsCheckoutOpen(true)}
+        onOpenDashboard={() => navigateTo('dashboard')}
       />
 
       <main className="flex-1">
@@ -94,7 +102,7 @@ export default function App() {
         <FaqSection />
       </main>
 
-      <Footer />
+      <Footer onOpenDashboard={() => navigateTo('dashboard')} />
 
       <CheckoutModal
         isOpen={isCheckoutOpen}

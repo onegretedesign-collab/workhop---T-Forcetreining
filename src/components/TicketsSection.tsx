@@ -38,7 +38,7 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onOpenCheckout }
                 </span>
                 <h3 className="text-2xl font-bold text-white font-display mt-1">
                   Congresso Presencial
-                  <span className="block">O Mundo da Musculação</span>
+                  <span className="block text-[#E50914]">Performance 360º</span>
                 </h3>
                 <p className="text-xs text-neutral-400 mt-1">
                   Acesso total ao evento na Academia Dragon.

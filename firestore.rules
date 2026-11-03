@@ -23,6 +23,14 @@ service cloud.firestore {
              data.createdAt == request.time;
     }
 
+    function isValidSale(data) {
+      return data.keys().hasAll(['customerName', 'amount', 'paymentMethod', 'status']) &&
+             data.customerName is string && data.customerName.size() > 0 && data.customerName.size() <= 150 &&
+             data.amount is number && data.amount >= 0 &&
+             data.paymentMethod is string &&
+             data.status is string;
+    }
+
     // Live event photos stream
     match /photos/{photoId} {
       // Anyone can view photos on the telão or mobile gallery
@@ -34,6 +42,14 @@ service cloud.firestore {
 
       // Photos cannot be updated or deleted by public users
       allow update, delete: if false;
+    }
+
+    // Sales and financial control for Performance 360º
+    match /sales/{saleId} {
+      allow get, list: if true;
+      allow create: if isValidId(saleId) && isValidSale(incoming());
+      allow update: if isValidId(saleId) && isValidSale(incoming());
+      allow delete: if isValidId(saleId);
     }
   }
 }

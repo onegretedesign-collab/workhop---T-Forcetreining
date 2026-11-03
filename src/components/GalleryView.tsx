@@ -92,7 +92,7 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onGoToSite }) => {
               className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white transition-colors cursor-pointer"
             >
               <Globe className="w-3.5 h-3.5 text-neutral-400" />
-              <span>Site do Congresso</span>
+              <span>Site do Evento</span>
             </button>
           )}
 

@@ -1,7 +1,10 @@
-import React from 'react';
-import { MapPin, Mail, ArrowUp, ExternalLink } from 'lucide-react';
+import { MapPin, Mail, ArrowUp, ExternalLink, BarChart3 } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenDashboard?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenDashboard }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -13,10 +16,7 @@ export const Footer: React.FC = () => {
           <div>
             <div className="flex flex-col justify-center tracking-tight">
               <span className="text-white font-extrabold text-xl sm:text-2xl font-display leading-tight">
-                1º CONGRESSO
-              </span>
-              <span className="text-xs font-mono tracking-[0.18em] text-[#E50914] font-bold uppercase leading-none mt-1">
-                O Mundo da Musculação
+                Performance <span className="text-[#E50914]">360º</span>
               </span>
             </div>
           </div>
@@ -43,22 +43,35 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <a
-            href="https://www.instagram.com/agenciadgpixel?vrfl=MWRzdnVpb2U5ZGI2Zg=="
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-neutral-400 hover:text-white text-xs font-mono transition-colors inline-flex items-center gap-1.5 group cursor-pointer"
-          >
-            <span>Criado por</span>
-            <span className="font-semibold text-neutral-300 group-hover:text-[#ff4d4d] group-hover:underline transition-colors">
-              AGENCIA DGPIXEL
-            </span>
-          </a>
+          <div className="flex items-center gap-6">
+            <a
+              href="https://www.instagram.com/agenciadgpixel?vrfl=MWRzdnVpb2U5ZGI2Zg=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-neutral-400 hover:text-white text-xs font-mono transition-colors inline-flex items-center gap-1.5 group cursor-pointer"
+            >
+              <span>Criado por</span>
+              <span className="font-semibold text-neutral-300 group-hover:text-[#ff4d4d] group-hover:underline transition-colors">
+                AGENCIA DGPIXEL
+              </span>
+            </a>
+
+            {onOpenDashboard && (
+              <button
+                type="button"
+                onClick={onOpenDashboard}
+                className="text-neutral-500 hover:text-[#E50914] text-xs font-mono transition-colors inline-flex items-center gap-1 cursor-pointer"
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+                <span>Painel de Vendas</span>
+              </button>
+            )}
+          </div>
 
           <button
             type="button"
             onClick={scrollToTop}
-            className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors cursor-pointer"
           >
             <span>Voltar ao topo</span>
             <ArrowUp className="w-3.5 h-3.5 text-[#E50914]" />

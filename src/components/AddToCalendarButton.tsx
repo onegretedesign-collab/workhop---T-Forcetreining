@@ -32,10 +32,10 @@ export const AddToCalendarButton: React.FC<{ className?: string }> = ({ classNam
   }, [isOpen]);
 
   // Event details
-  const eventTitle = '1º Congresso O Mundo da Musculação - 15hs - Academia Dragon';
+  const eventTitle = 'Performance 360º - 15hs - Academia Dragon';
   const eventLocation = 'Academia Dragon - Quirinópolis / Goiás';
   const eventDescription =
-    '1º Congresso O Mundo da Musculação: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples.\n\nPalestrantes confirmados: Personal Tiago Alves, Marcelo, Dr Guilherme Silverio, Jeriton, Nathálya Souza e Dra Leiliara Borges.\n\nLocal: Academia Dragon - Palco Principal\nInício pontual às 15:00.';
+    'Performance 360º: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples.\n\nPalestrantes confirmados: Personal Tiago Alves, Marcelo, Dr Guilherme Silverio, Jeriton, Nathálya Souza e Dra Leiliara Borges.\n\nLocal: Academia Dragon - Palco Principal\nInício pontual às 15:00.';
 
   // Google Calendar URL (20 de Fevereiro, 15h00 às 21h00 BRT -> 18h00 às 00h00 UTC)
   const handleOpenGoogleCalendar = () => {
@@ -70,12 +70,12 @@ export const AddToCalendarButton: React.FC<{ className?: string }> = ({ classNam
       'STATUS:CONFIRMED',
       'BEGIN:VALARM',
       'TRIGGER:-P1D',
-      'DESCRIPTION:Lembrete: Congresso O Mundo da Musculação amanhã às 15:00 na Academia Dragon',
+      'DESCRIPTION:Lembrete: Performance 360º amanhã às 15:00 na Academia Dragon',
       'ACTION:DISPLAY',
       'END:VALARM',
       'BEGIN:VALARM',
       'TRIGGER:-PT2H',
-      'DESCRIPTION:Lembrete: O congresso inicia em 2 horas na Academia Dragon',
+      'DESCRIPTION:Lembrete: O Performance 360º inicia em 2 horas na Academia Dragon',
       'ACTION:DISPLAY',
       'END:VALARM',
       'END:VEVENT',
@@ -86,7 +86,7 @@ export const AddToCalendarButton: React.FC<{ className?: string }> = ({ classNam
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'Congresso_O_Mundo_da_Musculacao_Dragon.ics');
+    link.setAttribute('download', 'Performance_360_Dragon.ics');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

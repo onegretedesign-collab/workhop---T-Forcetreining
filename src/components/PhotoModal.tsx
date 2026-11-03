@@ -93,7 +93,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = photo.imageUrl;
-    link.download = `congresso_dragon_${photo.id}.jpg`;
+    link.download = `performance_360_dragon_${photo.id}.jpg`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -104,8 +104,8 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: '1º Congresso O Mundo da Musculação',
-          text: `Confira a foto de ${photo.author || 'um participante'} na galeria oficial do congresso!`,
+          title: 'Performance 360º',
+          text: `Confira a foto de ${photo.author || 'um participante'} na galeria oficial do evento!`,
           url: url,
         });
         return;
@@ -180,7 +180,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
                   {formatPhotoTime(photo.createdAt)}
                 </span>
                 <span>•</span>
-                <span className="truncate text-neutral-400">1º Congresso Dragon</span>
+                <span className="truncate text-neutral-400">Performance 360º · Dragon</span>
               </div>
             </div>
           </div>
@@ -280,7 +280,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
             ) : (
               <div className="flex items-center gap-2 text-xs text-neutral-400 font-mono">
                 <Sparkles className="w-3.5 h-3.5 text-[#E50914]" />
-                <span>Momento oficial registrado no 1º Congresso O Mundo da Musculação</span>
+                <span>Momento oficial registrado no Performance 360º</span>
               </div>
             )}
           </div>

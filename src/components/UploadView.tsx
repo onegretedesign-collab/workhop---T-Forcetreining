@@ -139,14 +139,14 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
             className="mb-4 inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Voltar ao Site do Congresso</span>
+            <span>Voltar ao Site do Evento</span>
           </button>
         )}
 
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E50914]/15 border border-[#E50914]/30 text-[#E50914] text-xs font-mono font-semibold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>1º Congresso Dragon</span>
+            <span>Performance 360º</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Compartilhe sua Foto
@@ -247,7 +247,7 @@ export const UploadView: React.FC<UploadViewProps> = ({ onBackToMural }) => {
             </label>
             <input
               type="text"
-              placeholder="Ex: Presença confirmada no 1º Congresso!"
+              placeholder="Ex: Presença confirmada no Performance 360º!"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
               maxLength={150}

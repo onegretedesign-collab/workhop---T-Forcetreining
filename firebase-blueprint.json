@@ -27,12 +27,37 @@
         }
       },
       "required": ["imageUrl", "author", "createdAt"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Sales record for event ticket control, revenue tracking, and attendee headcount.",
+      "type": "object",
+      "properties": {
+        "customerName": { "type": "string", "maxLength": 150 },
+        "email": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "cpf": { "type": "string", "maxLength": 25 },
+        "ticketType": { "type": "string", "maxLength": 100 },
+        "attendeesCount": { "type": "number", "minimum": 1 },
+        "amount": { "type": "number", "minimum": 0 },
+        "paymentMethod": { "type": "string", "enum": ["pix", "credit_card", "cash", "bank_transfer", "complimentary"] },
+        "status": { "type": "string", "enum": ["confirmed", "pending", "cancelled"] },
+        "notes": { "type": "string", "maxLength": 500 },
+        "origin": { "type": "string", "enum": ["manual", "online"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerName", "amount", "paymentMethod", "status"]
     }
   },
   "firestore": {
     "/photos/{photoId}": {
       "schema": "Photo",
       "description": "Public stream of live event photos for the gallery and screen projection."
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Sales and attendee entries for cash flow management and comprehensive reporting."
     }
   }
 }

@@ -40,10 +40,10 @@ export const BannerGraphic: React.FC<BannerGraphicProps> = ({
         {showTitleOverlay && (
           <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 pointer-events-none bg-gradient-to-t from-[#0A0A0A]/85 via-transparent to-transparent">
             <span className="text-xs uppercase tracking-widest text-[#E50914] font-semibold">
-              WORKSHOP - T-FORCETREINING · 1º CONGRESSO
+              WORKSHOP - T-FORCETREINING · CONGRESSO
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mt-1">
-              O MUNDO DA MUSCULAÇÃO
+              PERFORMANCE 360º
             </h2>
           </div>
         )}

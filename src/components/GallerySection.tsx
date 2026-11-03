@@ -144,7 +144,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenUpload }) 
 
             <p className="mt-2 text-sm sm:text-base text-neutral-400 max-w-2xl leading-relaxed">
               Registros e bastidores em tempo real tirados por quem está vivendo o{' '}
-              <strong className="text-neutral-200">1º Congresso O Mundo da Musculação</strong> na Academia Dragon.
+              <strong className="text-neutral-200">Performance 360º</strong> na Academia Dragon.
             </p>
           </div>
 
@@ -197,7 +197,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenUpload }) 
               Inaugure a Galeria Oficial!
             </h3>
             <p className="text-neutral-400 text-sm mb-7 leading-relaxed">
-              Seja o primeiro participante a postar uma foto do congresso ou da Academia Dragon. Sua foto aparecerá aqui instantaneamente com seu nome!
+              Seja o primeiro participante a postar uma foto do Performance 360º ou da Academia Dragon. Sua foto aparecerá aqui instantaneamente com seu nome!
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
               <button
@@ -309,7 +309,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenUpload }) 
                 <span>QR Code dos Participantes</span>
               </div>
               <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight font-display">
-                Envie sua Foto do Congresso
+                Envie sua Foto · Performance 360º
               </h3>
               <p className="text-xs sm:text-sm text-neutral-400 mt-1">
                 Aponte a câmera do celular para este QR Code para enviar fotos direto para a galeria do site.

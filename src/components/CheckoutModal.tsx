@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
 import { SUMMIT_EVENT } from '../data/summitData';
 import {
   formatCPF,
@@ -177,6 +179,25 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         bannerUrl: activeBannerUrl,
       };
 
+      // Automatically register online sale in Firestore sales collection
+      addDoc(collection(db, 'sales'), {
+        customerName: badgeName.trim().toUpperCase(),
+        email: email.trim().toLowerCase(),
+        phone: formatPhone(phone),
+        cpf: formatCPF(cpf),
+        ticketType: 'Passaporte Completo',
+        attendeesCount: 1,
+        amount: totalPaid,
+        paymentMethod: paymentMethod === 'credit_card' ? 'credit_card' : 'pix',
+        status: 'confirmed',
+        origin: 'online',
+        notes: `Compra realizada no checkout do site (${paymentMethod === 'credit_card' ? `Cartão em ${selectedInstallment}x` : 'PIX Instantâneo'}). Crachá: ${badgeName.trim().toUpperCase()}`,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }).catch((err) => {
+        console.warn('Could not record online sale in Firestore:', err);
+      });
+
       onSuccess(voucher);
     }, 1200);
   };
@@ -228,7 +249,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         <div className="px-6 sm:px-8 py-3.5 bg-neutral-950 border-b border-neutral-800/80 flex items-center justify-between text-xs font-mono">
           <div className="flex items-center gap-2 text-neutral-300">
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>Congresso Presencial · O Mundo da Musculação (Crachá Físico Nominal)</span>
+            <span>Congresso Presencial · Performance 360º (Crachá Físico Nominal)</span>
           </div>
           <span className="text-white font-bold text-sm">
             {formatCurrency(SUMMIT_EVENT.price)}

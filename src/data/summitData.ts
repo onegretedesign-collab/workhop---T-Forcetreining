@@ -27,8 +27,8 @@ export interface BannerPreset {
 
 export const SUMMIT_EVENT = {
   name: "WORKSHOP - T-Forcetreining",
-  tagline: "O Mundo da Musculação: Hipertrofia, Hormonal, Nutrição & Tratamento de Lesões",
-  edition: "1º Congresso Oficial",
+  tagline: "Performance 360º: Hipertrofia, Hormonal, Nutrição & Tratamento de Lesões",
+  edition: "Edição Oficial",
   date: "20 de Fevereiro",
   dayOfWeek: "Sexta-feira",
   time: "Início pontual às 15:00",
@@ -43,7 +43,7 @@ export const SUMMIT_EVENT = {
 export const BANNER_PRESETS: BannerPreset[] = [
   {
     id: "preset-dragon-official",
-    name: "Banner Oficial - O Mundo da Musculação",
+    name: "Banner Oficial - Performance 360º",
     description: "Arte oficial do WORKSHOP - T-Forcetreining Dragon Gym com todos os palestrantes.",
     url: "https://i.postimg.cc/nzjjTH3B/BANNER-SITE-WOHRSHOP-DRAGON.png",
   },

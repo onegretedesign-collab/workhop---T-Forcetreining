@@ -39,14 +39,14 @@ export const Hero: React.FC<HeroProps> = ({
         {/* Main Headline - Official Logo replacing text in matching size */}
         <div className="max-w-4xl relative z-30">
           <h1 className="sr-only">
-            1° Congresso - O Mundo da Musculação: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples.
+            Performance 360º: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples.
           </h1>
 
           <div className="w-full flex flex-col items-start">
             <div className="w-full max-w-[320px] sm:max-w-[420px]">
               <img
                 src="/assets/logo-performance-360-trimmed.png"
-                alt="1° Congresso Performance 360"
+                alt="Performance 360º"
                 className="w-full h-auto object-contain filter drop-shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
                 loading="eager"
                 decoding="async"
@@ -122,7 +122,7 @@ export const Hero: React.FC<HeroProps> = ({
                 Academia Dragon
               </span>
               <p className="text-xs text-neutral-400 mt-0.5">
-                Palco principal para o 1 Congresso
+                Palco principal para o Performance 360º
               </p>
             </div>
           </div>
