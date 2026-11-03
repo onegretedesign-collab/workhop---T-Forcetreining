@@ -42,34 +42,36 @@ export const Hero: React.FC<HeroProps> = ({
             1° Congresso - O Mundo da Musculação: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples.
           </h1>
 
-          <div className="w-full max-w-[340px] sm:max-w-[480px] lg:max-w-[540px]">
-            <img
-              src="/assets/logo-congresso-trimmed.png"
-              alt="1° Congresso O Mundo da Musculação: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples"
-              className="w-full h-auto object-contain filter drop-shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
-              loading="eager"
-              decoding="async"
-              onError={(e) => {
-                const target = e.currentTarget as HTMLImageElement;
-                if (!target.src.includes('LOGO-CONGRESSO-O-MUNDO-DA-MUSCULACAO.png')) {
-                  target.src = 'https://i.postimg.cc/8cVtRnTB/LOGO-CONGRESSO-O-MUNDO-DA-MUSCULACAO.png';
-                }
-              }}
-            />
-          </div>
+          <div className="w-fit flex flex-col items-start">
+            <div className="w-full max-w-[320px] sm:max-w-[420px]">
+              <img
+                src="/assets/logo-performance-360-trimmed.png"
+                alt="1° Congresso Performance 360"
+                className="w-full h-auto object-contain filter drop-shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
+                loading="eager"
+                decoding="async"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  if (!target.src.includes('LOGO-CONGRESSO-O-MUNDO-DA-MUSCULACAO-01-branco.png')) {
+                    target.src = 'https://i.postimg.cc/bJ6pMtVR/LOGO-CONGRESSO-O-MUNDO-DA-MUSCULACAO-01-branco.png';
+                  }
+                }}
+              />
+            </div>
 
-          {/* Action CTA */}
-          <div className="mt-8 flex flex-wrap items-center gap-3.5">
-            <button
-              type="button"
-              onClick={onOpenCheckout}
-              className="inline-flex items-center justify-center gap-2.5 px-7 py-4 text-sm sm:text-base font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-xl transition-all shadow-xl shadow-[#E50914]/25 hover:shadow-[#E50914]/40"
-            >
-              <span>Garanta já sua vaga</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {/* Action CTA */}
+            <div className="mt-8 flex flex-wrap items-center gap-3.5">
+              <button
+                type="button"
+                onClick={onOpenCheckout}
+                className="inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-xl transition-all shadow-xl shadow-[#E50914]/25 hover:shadow-[#E50914]/40"
+              >
+                <span>Garanta já sua vaga</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
 
-            <AddToCalendarButton />
+              <AddToCalendarButton />
+            </div>
           </div>
         </div>
 

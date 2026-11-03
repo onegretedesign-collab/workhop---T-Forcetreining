@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidPhoto(data) {
+      return data.keys().hasAll(['imageUrl', 'author', 'createdAt']) &&
+             data.keys().hasOnly(['imageUrl', 'author', 'caption', 'createdAt']) &&
+             data.imageUrl is string && data.imageUrl.size() > 0 && data.imageUrl.size() <= 2048 &&
+             data.author is string && data.author.size() > 0 && data.author.size() <= 100 &&
+             (!('caption' in data) || (data.caption is string && data.caption.size() <= 300)) &&
+             data.createdAt == request.time;
+    }
+
+    // Live event photos stream
+    match /photos/{photoId} {
+      // Anyone can view photos on the telão or mobile gallery
+      allow get: if isValidId(photoId);
+      allow list: if true;
+
+      // Event guests can post photos (without needing auth) following strict schema
+      allow create: if isValidId(photoId) && isValidPhoto(incoming());
+
+      // Photos cannot be updated or deleted by public users
+      allow update, delete: if false;
+    }
+  }
+}

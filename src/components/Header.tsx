@@ -3,10 +3,12 @@ import { Ticket, Menu, X } from 'lucide-react';
 
 interface HeaderProps {
   onOpenCheckout: () => void;
+  onOpenMural?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenCheckout,
+  onOpenMural,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -57,6 +59,17 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Primary action */}
         <div className="flex items-center gap-3 shrink-0">
+          {onOpenMural && (
+            <button
+              type="button"
+              onClick={onOpenMural}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 text-xs font-semibold text-neutral-200 hover:text-white transition-colors cursor-pointer"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Mural ao Vivo</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={onOpenCheckout}

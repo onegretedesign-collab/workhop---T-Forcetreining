@@ -1,0 +1,38 @@
+{
+  "entities": {
+    "Photo": {
+      "title": "Photo",
+      "description": "Event photo shared by attendees to be displayed on the live mural / telão.",
+      "type": "object",
+      "properties": {
+        "imageUrl": {
+          "type": "string",
+          "description": "Download URL or public image link of the uploaded photo.",
+          "maxLength": 2048
+        },
+        "author": {
+          "type": "string",
+          "description": "Name or handle of the guest who shared the photo.",
+          "maxLength": 100
+        },
+        "caption": {
+          "type": "string",
+          "description": "Optional caption or message for the event wall.",
+          "maxLength": 300
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the photo was recorded."
+        }
+      },
+      "required": ["imageUrl", "author", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/photos/{photoId}": {
+      "schema": "Photo",
+      "description": "Public stream of live event photos for the gallery and screen projection."
+    }
+  }
+}
