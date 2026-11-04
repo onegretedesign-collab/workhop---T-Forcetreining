@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SUMMIT_EVENT } from '../data/summitData';
 import { Ticket, Menu, X, BarChart3 } from 'lucide-react';
 
 interface HeaderProps {
@@ -85,14 +86,15 @@ export const Header: React.FC<HeaderProps> = ({
             <span>Galeria de Fotos</span>
           </a>
 
-          <button
-            type="button"
-            onClick={onOpenCheckout}
+          <a
+            href={SUMMIT_EVENT.checkoutUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-lg transition-all shadow-md shadow-[#E50914]/25 whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Ticket className="w-4 h-4" />
             <span>Garanta já sua vaga</span>
-          </button>
+          </a>
 
           {/* Mobile hamburger toggle */}
           <button

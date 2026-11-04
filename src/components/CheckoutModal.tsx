@@ -379,6 +379,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </h3>
             </div>
 
+            <div className="mb-4 p-3 rounded-xl bg-[#009EE3]/10 border border-[#009EE3]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs">
+              <div className="text-neutral-300">
+                <span className="font-semibold text-white">Prefere pagar direto no Mercado Pago?</span>
+                <p className="text-[11px] text-neutral-400">Acesse o checkout oficial para Pix ou cartão em até 12x.</p>
+              </div>
+              <a
+                href={SUMMIT_EVENT.checkoutUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-lg bg-[#009EE3] hover:bg-[#0082ba] text-white font-bold text-xs inline-flex items-center gap-1.5 transition-colors shrink-0"
+              >
+                <span>Ir para Mercado Pago</span>
+                <span className="text-[11px]">↗</span>
+              </a>
+            </div>
+
             <div className="grid grid-cols-2 gap-3 mb-5">
               <button
                 type="button"

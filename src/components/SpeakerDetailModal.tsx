@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Speaker } from '../data/summitData';
+import { Speaker, SUMMIT_EVENT } from '../data/summitData';
 import { SpeakerPosterCard } from './SpeakerPosterCard';
 import { ChevronLeft, ChevronRight, X, Calendar, Share2, Check, ArrowRight, Instagram } from 'lucide-react';
 
@@ -218,19 +218,15 @@ END:VCALENDAR`;
                 Voltar
               </button>
 
-              {onOpenCheckout && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    onOpenCheckout();
-                  }}
-                  className="px-6 py-3 rounded-xl bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#E50914]/20 inline-flex items-center gap-1.5"
-                >
-                  <span>Garanta já sua vaga</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              )}
+              <a
+                href={SUMMIT_EVENT.checkoutUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 rounded-xl bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#E50914]/20 inline-flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>Garanta já sua vaga</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </a>
 
               <button
                 type="button"

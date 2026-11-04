@@ -74,14 +74,15 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onOpenCheckout }
                   ou em até 12x no cartão de crédito via Mercado Pago
                 </p>
 
-                <button
-                  type="button"
-                  onClick={onOpenCheckout}
-                  className="w-full mt-6 py-4 px-6 rounded-xl font-bold text-sm sm:text-base text-white bg-[#E50914] hover:bg-[#b80710] transition-all shadow-xl shadow-[#E50914]/25 flex items-center justify-center gap-2"
+                <a
+                  href={SUMMIT_EVENT.checkoutUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full mt-6 py-4 px-6 rounded-xl font-bold text-sm sm:text-base text-white bg-[#E50914] hover:bg-[#b80710] transition-all shadow-xl shadow-[#E50914]/25 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Ticket className="w-5 h-5" />
                   <span>Garanta já sua vaga</span>
-                </button>
+                </a>
 
                 <div className="flex items-center justify-center gap-4 mt-4 text-[11px] text-neutral-400">
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
