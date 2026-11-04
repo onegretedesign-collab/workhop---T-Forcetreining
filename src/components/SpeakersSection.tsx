@@ -82,7 +82,7 @@ export const SpeakersSection: React.FC<SpeakersSectionProps> = ({ onOpenCheckout
               Palestrantes que <span className="text-[#E50914]">Inspiram.</span>
             </h2>
             <p className="mt-3 text-sm sm:text-base text-neutral-400 max-w-xl">
-              Clique em qualquer palestrante para expandir os detalhes da palestra, biografia completa e ementa.
+              Role a tela ou toque no card para ler o conteúdo e ementa completa de cada palestrante.
             </p>
           </div>
 
@@ -106,6 +106,7 @@ export const SpeakersSection: React.FC<SpeakersSectionProps> = ({ onOpenCheckout
               <SpeakerPosterCard
                 speaker={speaker}
                 onClick={() => handleOpenSpeaker(index)}
+                onOpenCheckout={onOpenCheckout}
                 className="w-full max-w-[380px]"
               />
             </motion.div>
