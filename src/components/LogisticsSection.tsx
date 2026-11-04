@@ -1,6 +1,32 @@
 import React from 'react';
+import { motion, type Variants } from 'framer-motion';
 import { LOGISTICS_STEPS } from '../data/summitData';
 import { Clock, QrCode, IdCard, DoorOpen, CheckCircle2, ShieldCheck, Coffee } from 'lucide-react';
+
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 35 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 25 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
 
 export const LogisticsSection: React.FC = () => {
   const icons = [
@@ -11,10 +37,17 @@ export const LogisticsSection: React.FC = () => {
   ];
 
   return (
-    <section id="credenciamento" className="py-20 sm:py-28 bg-[#0D0D0D] border-b border-neutral-900 relative overflow-hidden">
+    <motion.section
+      id="credenciamento"
+      className="py-20 sm:py-28 bg-[#0D0D0D] border-b border-neutral-900 relative overflow-hidden"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.12 }}
+      variants={sectionVariants}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="max-w-3xl mb-14">
+        <motion.div variants={itemVariants} className="max-w-3xl mb-14">
           <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#E50914] font-semibold mb-2">
             <IdCard className="w-4 h-4" />
             <span>Fluxo de Acesso & Credenciamento</span>
@@ -25,13 +58,18 @@ export const LogisticsSection: React.FC = () => {
           <p className="mt-4 text-base text-neutral-300">
             Chegue às 07:30 da manhã para o Welcome Coffee executivo e retire sua credencial oficial nominal com leitura rápida do voucher digital em totens expressos.
           </p>
-        </div>
+        </motion.div>
 
         {/* 4 Steps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div
+          variants={itemVariants}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
           {LOGISTICS_STEPS.map((step, idx) => (
-            <div
+            <motion.div
               key={step.step}
+              variants={itemVariants}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
               className="relative rounded-2xl bg-neutral-900/40 border border-neutral-800 hover:border-neutral-700 transition-all p-6 flex flex-col justify-between"
             >
               <div>
@@ -61,12 +99,15 @@ export const LogisticsSection: React.FC = () => {
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                 <span>{step.details}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Operational Guidelines Banner */}
-        <div className="mt-12 p-6 sm:p-8 rounded-2xl bg-neutral-900/60 border border-neutral-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <motion.div
+          variants={itemVariants}
+          className="mt-12 p-6 sm:p-8 rounded-2xl bg-neutral-900/60 border border-neutral-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+        >
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-xl bg-[#E50914]/10 border border-[#E50914]/30 flex items-center justify-center text-[#E50914] shrink-0 mt-0.5">
               <ShieldCheck className="w-5 h-5" />
@@ -85,8 +126,8 @@ export const LogisticsSection: React.FC = () => {
             <Coffee className="w-4 h-4 text-[#E50914]" />
             <span>Café contínuo até as 08:30</span>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };

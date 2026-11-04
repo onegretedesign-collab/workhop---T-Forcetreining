@@ -45,7 +45,7 @@ export const BANNER_PRESETS: BannerPreset[] = [
     id: "preset-dragon-official",
     name: "Banner Oficial - Performance 360º",
     description: "Arte oficial do WORKSHOP - T-Forcetreining Dragon Gym com todos os palestrantes.",
-    url: "https://i.postimg.cc/nzjjTH3B/BANNER-SITE-WOHRSHOP-DRAGON.png",
+    url: "https://i.postimg.cc/LsN91H0k/BANNER-SITE-WOHRSHOP-DRAGON.png",
   },
   {
     id: "preset-crimson-vortex",

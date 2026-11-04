@@ -18,7 +18,7 @@ import { GallerySection } from './components/GallerySection';
 import { CheckoutModal, VoucherData } from './components/CheckoutModal';
 import { VoucherModal } from './components/VoucherModal';
 
-const OFFICIAL_BANNER_URL = 'https://i.postimg.cc/nzjjTH3B/BANNER-SITE-WOHRSHOP-DRAGON.png';
+const OFFICIAL_BANNER_URL = 'https://i.postimg.cc/LsN91H0k/BANNER-SITE-WOHRSHOP-DRAGON.png';
 
 export default function App() {
   const [mode, setMode] = useState<string | null>(() => {
