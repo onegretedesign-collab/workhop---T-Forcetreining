@@ -29,7 +29,6 @@ import {
   FileSpreadsheet,
   FileText,
   UserCheck,
-  Link2,
   Copy,
   Check,
   Search,
@@ -78,22 +77,7 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
 
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isBuyersModalOpen, setIsBuyersModalOpen] = useState(false);
-  const [copiedUrl, setCopiedUrl] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  const returnUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/?mode=retorno-pagamento`
-    : 'https://ais-pre-zk3mewypumi3oysvl2lgb5-215875140479.us-east1.run.app/?mode=retorno-pagamento';
-
-  const handleCopyReturnUrl = () => {
-    navigator.clipboard.writeText(returnUrl);
-    setCopiedUrl(true);
-    setToastMessage('Link de retorno do Mercado Pago copiado!');
-    setTimeout(() => {
-      setCopiedUrl(false);
-      setToastMessage(null);
-    }, 2500);
-  };
 
   // Real-time Firestore sync
   useEffect(() => {
@@ -434,39 +418,6 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
           </div>
         )}
 
-        {/* Mercado Pago Return URL Config Banner */}
-        <section className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#009EE3]/15 via-neutral-900 to-[#E50914]/10 border border-[#009EE3]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#009EE3]/20 border border-[#009EE3]/40 flex items-center justify-center text-[#009EE3] shrink-0 mt-0.5">
-              <Link2 className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold text-[#009EE3] uppercase tracking-wider">
-                  Configuração Mercado Pago · Endereço de Retorno
-                </span>
-                <span className="text-[10px] bg-[#009EE3]/20 text-[#009EE3] px-2 py-0.5 rounded-full font-bold">
-                  Página Oculta
-                </span>
-              </div>
-              <p className="text-xs text-neutral-300 mt-1 max-w-2xl leading-relaxed">
-                Cole este link no seu Mercado Pago em <strong>"Configurações do link de pagamento ➔ URL de Retorno / Redirecionamento"</strong>. Ao concluir o pagamento, o cliente é direcionado para a página onde seus dados são salvos no banco de dados e ele recebe o voucher oficial.
-              </p>
-              <div className="mt-2 flex items-center gap-2 text-xs font-mono text-neutral-200 bg-black/60 px-3 py-1.5 rounded-lg border border-neutral-800 break-all select-all">
-                <span>{returnUrl}</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleCopyReturnUrl}
-            className="self-end md:self-auto inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#009EE3] hover:bg-[#0082ba] text-white text-xs font-bold transition shadow-lg shadow-[#009EE3]/20 shrink-0 cursor-pointer"
-          >
-            {copiedUrl ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            <span>{copiedUrl ? 'Link Copiado!' : 'Copiar Link de Retorno'}</span>
-          </button>
-        </section>
 
         {/* Section: KPI Cards (Faturamento e Lotação) */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

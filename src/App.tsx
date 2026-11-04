@@ -13,7 +13,6 @@ import { Hero } from './components/Hero';
 import { SpeakersSection } from './components/SpeakersSection';
 import { LogisticsSection } from './components/LogisticsSection';
 import { TicketsSection } from './components/TicketsSection';
-import { FaqSection } from './components/FaqSection';
 import { Footer } from './components/Footer';
 import { GallerySection } from './components/GallerySection';
 import { CheckoutModal, VoucherData } from './components/CheckoutModal';
@@ -112,7 +111,6 @@ export default function App() {
         <LogisticsSection />
         <TicketsSection onOpenCheckout={() => setIsCheckoutOpen(true)} />
         <GallerySection onOpenUpload={() => navigateTo('upload')} />
-        <FaqSection />
       </main>
 
       <Footer onOpenDashboard={() => navigateTo('dashboard')} />

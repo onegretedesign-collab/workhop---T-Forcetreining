@@ -56,12 +56,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span>Galeria</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           </a>
-          <a
-            href="#faq"
-            className="hover:text-white hover:text-[#E50914] transition-colors whitespace-nowrap shrink-0"
-          >
-            Dúvidas Frequentes
-          </a>
         </nav>
 
         {/* Zone 3: Primary action */}
@@ -149,13 +143,6 @@ export const Header: React.FC<HeaderProps> = ({
             className="block px-3 py-2 text-sm font-medium text-neutral-200 hover:text-[#E50914] hover:bg-neutral-900 rounded-lg"
           >
             Galeria de Fotos (Ao Vivo)
-          </a>
-          <a
-            href="#faq"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-medium text-neutral-200 hover:text-[#E50914] hover:bg-neutral-900 rounded-lg"
-          >
-            Dúvidas Frequentes
           </a>
         </div>
       )}

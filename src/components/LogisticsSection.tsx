@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { LOGISTICS_STEPS } from '../data/summitData';
-import { Clock, QrCode, IdCard, DoorOpen, CheckCircle2, ShieldCheck, Coffee } from 'lucide-react';
+import { Clock, IdCard, DoorOpen, ShieldCheck, Sparkles } from 'lucide-react';
 
 const sectionVariants: Variants = {
   hidden: { opacity: 0, y: 35 },
@@ -30,10 +30,9 @@ const itemVariants: Variants = {
 
 export const LogisticsSection: React.FC = () => {
   const icons = [
-    <Clock className="w-5 h-5 text-[#E50914]" />,
-    <QrCode className="w-5 h-5 text-[#E50914]" />,
-    <IdCard className="w-5 h-5 text-[#E50914]" />,
     <DoorOpen className="w-5 h-5 text-[#E50914]" />,
+    <IdCard className="w-5 h-5 text-[#E50914]" />,
+    <Sparkles className="w-5 h-5 text-[#E50914]" />,
   ];
 
   return (
@@ -47,23 +46,20 @@ export const LogisticsSection: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <motion.div variants={itemVariants} className="max-w-3xl mb-14">
+        <motion.div variants={itemVariants} className="max-w-3xl mb-12 sm:mb-16">
           <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#E50914] font-semibold mb-2">
             <IdCard className="w-4 h-4" />
             <span>Fluxo de Acesso & Credenciamento</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-extrabold text-white font-display tracking-tight">
-            Logística de Chegada & Entrega do Crachá Físico
+            Credenciamento e entrega de crachás
           </h2>
-          <p className="mt-4 text-base text-neutral-300">
-            Chegue às 07:30 da manhã para o Welcome Coffee executivo e retire sua credencial oficial nominal com leitura rápida do voucher digital em totens expressos.
-          </p>
         </motion.div>
 
-        {/* 4 Steps Grid */}
+        {/* 3 Steps Grid */}
         <motion.div
           variants={itemVariants}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {LOGISTICS_STEPS.map((step, idx) => (
             <motion.div
@@ -86,18 +82,13 @@ export const LogisticsSection: React.FC = () => {
                   PASSO {step.step}
                 </span>
 
-                <h3 className="text-lg font-bold text-white font-display leading-snug">
+                <h3 className="text-base sm:text-lg font-bold text-white font-display leading-snug">
                   {step.title}
                 </h3>
 
                 <p className="text-xs sm:text-sm text-neutral-300 mt-2 leading-relaxed">
                   {step.description}
                 </p>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-neutral-800/80 flex items-start gap-2 text-xs text-neutral-400">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                <span>{step.details}</span>
               </div>
             </motion.div>
           ))}
@@ -117,14 +108,14 @@ export const LogisticsSection: React.FC = () => {
                 Recomendações Importantes para o Credenciamento
               </h4>
               <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-2xl leading-relaxed">
-                Tenha em mãos seu documento oficial com foto (RG, CNH ou Passaporte) e o Voucher Digital gerado no celular ou impresso. O credenciamento expresso evita filas e libera seu acesso ao Welcome Coffee e auditório principal.
+                Tenha em mãos seu documento oficial com foto (RG, CNH ou Passaporte) e o Voucher Digital gerado no celular ou impresso para a retirada rápida do seu crachá oficial nominal.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 shrink-0 font-mono text-xs text-neutral-400 border-t md:border-t-0 md:border-l border-neutral-800 pt-4 md:pt-0 md:pl-6">
-            <Coffee className="w-4 h-4 text-[#E50914]" />
-            <span>Café contínuo até as 08:30</span>
+            <Clock className="w-4 h-4 text-[#E50914]" />
+            <span>Abertura às 14:00 · Início às 15:00</span>
           </div>
         </motion.div>
       </div>

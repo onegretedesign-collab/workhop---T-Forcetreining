@@ -10,7 +10,7 @@
   }
 
   body {
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #0A0A0A;
     color: #F5F5F5;
     overflow-x: hidden;
@@ -26,12 +26,13 @@
     }
   }
 
-  h1, h2, h3, h4, h5, h6, .font-display {
-    font-family: 'Poppins', sans-serif;
+  /* Universal Poppins standard for texts, numerals, headings, buttons, and badges */
+  *, h1, h2, h3, h4, h5, h6, input, button, select, textarea, .font-display, .font-sans, .font-mono, .tabular-nums {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
-  .font-mono, code, .tabular-nums {
-    font-family: 'JetBrains Mono', monospace;
+  .font-mono, .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 

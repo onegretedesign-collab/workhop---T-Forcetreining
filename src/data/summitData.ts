@@ -212,31 +212,21 @@ export const SPEAKERS: Speaker[] = [
 export const LOGISTICS_STEPS = [
   {
     step: "01",
-    time: "07:30",
-    title: "Chegada & Recepção Exclusiva",
-    description: "Abertura dos portões do Centro de Convenções com Welcome Coffee premium, barista e primeiros encontros de networking.",
-    details: "Estacionamento com serviço de valet no subsolo e acesso direto aos elevadores da ala Master.",
+    time: "14:00",
+    title: "CHEGADA E RECEPÇÃO EXCLUSIVA",
+    description: "Abertura dos portões da Academia dragon as 14hs, para momentos de network e troca de conhecimentos.",
   },
   {
     step: "02",
-    time: "07:45",
-    title: "Leitura Instantânea do Voucher",
-    description: "Apresente o QR Code do seu voucher digital no celular (ou impresso) em nossos totens de atendimento expresso.",
-    details: "Leitores ópticos de alta velocidade validam sua inscrição em menos de 3 segundos, sem filas.",
+    time: "14:20",
+    title: "RECEPÇÃO E CREDENCIAMENTO",
+    description: "As 14:20, Retirada do seu crachás oficial personalizado com seu nome, empresa e credencial.",
   },
   {
     step: "03",
-    time: "08:00",
-    title: "Emissão & Entrega do Crachá Físico Nominal",
-    description: "Retirada do seu crachá oficial personalizado com seu nome, empresa e credencial gravados em material de alta resistência.",
-    details: "Acompanha cordão oficial do evento WORKSHOP - T-Forcetreining e Kit de Boas-Vindas executivo.",
-  },
-  {
-    step: "04",
-    time: "08:30",
-    title: "Acesso à Plenária Principal",
-    description: "Entrada liberada para a abertura solene com início pontual da primeira palestra magna às 08:45.",
-    details: "Lugares confortáveis com conexão Wi-Fi dedicada e pontos de recarga para dispositivos.",
+    time: "15:00",
+    title: "ESCOLHA O MELHOR LUGAR E VIVA ESSA EXPERIÊNCIA",
+    description: "15hs Daremos início ás palestras. E esperamos que viva o extraordinário e que destrave o que te prende de elevar seu próximo nível.",
   },
 ];
 
