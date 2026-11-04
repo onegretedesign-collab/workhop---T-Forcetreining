@@ -44,6 +44,7 @@ export const TicketCheckoutCard: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSaving, setIsSaving] = useState(false);
   const [leadSaved, setLeadSaved] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState<string>(SUMMIT_EVENT.checkoutUrl);
 
   // Load from localStorage if previously filled
   useEffect(() => {
@@ -100,12 +101,13 @@ export const TicketCheckoutCard: React.FC = () => {
       registeredAt: new Date().toISOString(),
     };
 
+    let createdSaleId = '';
     try {
       // Save locally so the post-payment return page can access it automatically
       localStorage.setItem(STORAGE_KEY, JSON.stringify(buyer));
 
       // Register intent in Firestore sales as pending
-      await addDoc(collection(db, 'sales'), {
+      const docRef = await addDoc(collection(db, 'sales'), {
         customerName: buyer.fullName,
         email: buyer.email,
         phone: buyer.phone,
@@ -119,9 +121,27 @@ export const TicketCheckoutCard: React.FC = () => {
         origin: 'online',
         createdAt: serverTimestamp(),
       });
+      createdSaleId = docRef.id;
       setLeadSaved(true);
     } catch (err) {
       console.warn('Erro ao registrar intenção no banco:', err);
+    }
+
+    // Call dynamic preference endpoint
+    try {
+      const res = await fetch('/api/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ buyer, saleId: createdSaleId }),
+      });
+      if (res.ok) {
+        const pref = await res.json();
+        if (pref.url) {
+          setPaymentUrl(pref.url);
+        }
+      }
+    } catch {
+      // Gracefully keeps default SUMMIT_EVENT.checkoutUrl
     } finally {
       setIsSaving(false);
       setStep(2);
@@ -358,7 +378,7 @@ export const TicketCheckoutCard: React.FC = () => {
 
           {/* Official COMPRE AQUI Button requested by user */}
           <a
-            href={SUMMIT_EVENT.checkoutUrl}
+            href={paymentUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full py-4 px-6 rounded-xl font-bold text-base text-white bg-[#E50914] hover:bg-[#b80710] transition-all shadow-xl shadow-[#E50914]/30 flex items-center justify-center gap-2 cursor-pointer group hover:scale-[1.01]"

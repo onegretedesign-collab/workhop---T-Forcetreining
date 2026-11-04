@@ -230,9 +230,6 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-display">
                 Confirme seus dados para emissão do Crachá
               </h2>
-              <p className="text-xs sm:text-sm text-neutral-400 mt-2">
-                Precisamos do seu nome completo e documento para registrar seu crachá oficial de policarbonato e liberar seu voucher.
-              </p>
             </div>
 
             <form onSubmit={handleManualSubmit} className="space-y-4">
@@ -335,12 +332,11 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                 {isManualSubmitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Gerando Credencial...</span>
+                    <span>Enviando dados...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5" />
-                    <span>Emitir Meu Crachá & Voucher Oficial</span>
+                    <span>Enviar dados</span>
                   </>
                 )}
               </button>
