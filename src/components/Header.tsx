@@ -17,14 +17,14 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#0A0A0A]/90 backdrop-blur-md border-b border-neutral-800/80 transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-6 lg:gap-8">
         {/* Brand wordmark: Performance 360º */}
         <a
           href="#"
           className="flex flex-col justify-center group tracking-tight whitespace-nowrap shrink-0"
           aria-label="Performance 360º"
         >
-          <span className="text-white font-extrabold text-lg sm:text-xl font-display leading-tight group-hover:text-[#ff4d4d] transition-colors">
+          <span className="text-white font-extrabold text-base sm:text-xl font-display leading-tight group-hover:text-[#ff4d4d] transition-colors">
             Performance <span className="text-[#E50914]">360º</span>
           </span>
         </a>
@@ -58,17 +58,17 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
         </nav>
 
-        {/* Zone 3: Primary action */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        {/* Zone 3: Primary actions & Compact Controls */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           {onOpenDashboard && (
             <button
               type="button"
               onClick={onOpenDashboard}
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 text-xs font-semibold text-neutral-300 hover:text-white transition-colors cursor-pointer"
-              title="Acessar Painel de Controle de Vendas"
+              className="p-2 sm:p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 text-neutral-300 hover:text-white transition-colors cursor-pointer shrink-0 flex items-center justify-center"
+              title="Painel de Vendas"
+              aria-label="Painel de Vendas"
             >
-              <BarChart3 className="w-3.5 h-3.5 text-[#E50914]" />
-              <span>Painel de Vendas</span>
+              <BarChart3 className="w-4 h-4 text-[#E50914]" />
             </button>
           )}
 
@@ -77,14 +77,14 @@ export const Header: React.FC<HeaderProps> = ({
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 text-xs font-semibold text-neutral-200 hover:text-white transition-colors cursor-pointer"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Galeria de Fotos</span>
+            <span>Galeria</span>
           </a>
 
           <a
             href="#ingressos"
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-lg transition-all shadow-md shadow-[#E50914]/25 whitespace-nowrap shrink-0 cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs md:text-sm font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-lg transition-all shadow-md shadow-[#E50914]/25 whitespace-nowrap shrink-0 cursor-pointer"
           >
-            <Ticket className="w-4 h-4" />
+            <Ticket className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
             <span>Garanta já sua vaga</span>
           </a>
 
@@ -93,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Abrir menu"
-            className="md:hidden p-2 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800"
+            className="md:hidden p-1.5 sm:p-2 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 shrink-0"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
