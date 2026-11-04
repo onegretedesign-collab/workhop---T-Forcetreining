@@ -1,7 +1,8 @@
 import React from 'react';
 import { SUMMIT_EVENT, TICKET_BENEFITS } from '../data/summitData';
 import { formatCurrency } from '../utils/formatters';
-import { Check, ShieldCheck, Ticket, Sparkles, CreditCard, QrCode } from 'lucide-react';
+import { TicketCheckoutCard } from './TicketCheckoutCard';
+import { Check, ShieldCheck, Ticket, Sparkles } from 'lucide-react';
 
 interface TicketsSectionProps {
   onOpenCheckout: () => void;
@@ -74,27 +75,8 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onOpenCheckout }
                   ou em até 12x no cartão de crédito via Mercado Pago
                 </p>
 
-                <a
-                  href={SUMMIT_EVENT.checkoutUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full mt-6 py-4 px-6 rounded-xl font-bold text-sm sm:text-base text-white bg-[#E50914] hover:bg-[#b80710] transition-all shadow-xl shadow-[#E50914]/25 flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <Ticket className="w-5 h-5" />
-                  <span>Garanta já sua vaga</span>
-                </a>
-
-                <div className="flex items-center justify-center gap-4 mt-4 text-[11px] text-neutral-400">
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                    <QrCode className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Pix Instantâneo</span>
-                  </span>
-                  <span aria-hidden="true" className="text-neutral-600">·</span>
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                    <CreditCard className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Cartão em até 12x</span>
-                  </span>
-                </div>
+                {/* Interactive Buyer Registration & Checkout Flow */}
+                <TicketCheckoutCard />
               </div>
             </div>
 

@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import GalleryView from './components/GalleryView';
 import UploadView from './components/UploadView';
 import { SalesDashboard } from './components/SalesDashboard/SalesDashboard';
+import { PaymentReturnView } from './components/PaymentReturnView';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { SpeakersSection } from './components/SpeakersSection';
@@ -53,6 +54,13 @@ export default function App() {
   const isUploadMode = mode === 'upload';
   const isMuralMode = mode === 'mural';
   const isDashboardMode = mode === 'dashboard';
+  const isReturnMode =
+    mode === 'retorno-pagamento' ||
+    mode === 'retorno' ||
+    mode === 'sucesso' ||
+    (typeof window !== 'undefined' &&
+      (new URLSearchParams(window.location.search).has('payment_id') ||
+       new URLSearchParams(window.location.search).has('collection_id')));
 
   // Landing page state
   const [currentBanner] = useState<string>(OFFICIAL_BANNER_URL);
@@ -65,6 +73,11 @@ export default function App() {
     setIsCheckoutOpen(false);
     setIsVoucherOpen(true);
   };
+
+  // If in Mercado Pago return page mode
+  if (isReturnMode) {
+    return <PaymentReturnView onBackToSite={() => navigateTo(null)} />;
+  }
 
   // If in sales dashboard mode
   if (isDashboardMode) {

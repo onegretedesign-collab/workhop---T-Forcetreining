@@ -62,9 +62,7 @@ export const Hero: React.FC<HeroProps> = ({
             {/* Action CTA: side-by-side (frente a frente) on mobile and centered with the page */}
             <div className="mt-6 sm:mt-8 w-full flex flex-row items-center justify-center sm:justify-start gap-2 sm:gap-3.5 flex-nowrap">
               <a
-                href={SUMMIT_EVENT.checkoutUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#ingressos"
                 className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-xl transition-all shadow-xl shadow-[#E50914]/25 hover:shadow-[#E50914]/40 whitespace-nowrap shrink-0 cursor-pointer"
               >
                 <span>Garanta já sua vaga</span>

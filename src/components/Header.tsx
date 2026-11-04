@@ -87,9 +87,7 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
 
           <a
-            href={SUMMIT_EVENT.checkoutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#ingressos"
             className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-lg transition-all shadow-md shadow-[#E50914]/25 whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Ticket className="w-4 h-4" />
