@@ -3,7 +3,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SUMMIT_EVENT } from '../data/summitData';
-import { formatCPF, validateCPF, formatPhone, generateVoucherId, formatCurrency } from '../utils/formatters';
+import { formatCPF, validateCPF, formatPhone, formatCurrency } from '../utils/formatters';
 import { BuyerData } from './TicketCheckoutCard';
 import {
   CheckCircle2,
@@ -24,6 +24,8 @@ import {
   Loader2,
   Copy,
   Check,
+  CreditCard,
+  MessageCircle,
 } from 'lucide-react';
 
 interface PaymentReturnViewProps {
@@ -32,22 +34,25 @@ interface PaymentReturnViewProps {
 
 const STORAGE_KEY = 'performance360_buyer_data';
 const RECORDED_SESSION_KEY = 'performance360_recorded_sale_id';
+const ORGANIZER_WHATSAPP = '5564993367849'; // (64) 99336-7849
 
 export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSite }) => {
   const [buyer, setBuyer] = useState<BuyerData | null>(null);
   const [voucherCode, setVoucherCode] = useState<string>('');
-  const [isProcessing, setIsProcessing] = useState(true);
-  const [hasStoredData, setHasStoredData] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Manual fallback form if user opened from another device/browser
+  // Form fields
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [cpf, setCpf] = useState('');
   const [companyRole, setCompanyRole] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'Pix Instantâneo' | 'Cartão de Crédito' | 'Boleto Bancário'>('Pix Instantâneo');
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  const [isManualSubmitting, setIsManualSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lastPurchaseTime, setLastPurchaseTime] = useState<string>('');
+  const [whatsappSent, setWhatsappSent] = useState(false);
 
   useEffect(() => {
     // Generate or retrieve persistent voucher ID for this device session
@@ -58,127 +63,176 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
     }
     setVoucherCode(existingVoucher);
 
-    // Check if buyer data is already stored
+    // Pre-populate fields from localStorage if user completed step 1 earlier
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed: BuyerData = JSON.parse(stored);
-        if (parsed.fullName && parsed.email) {
-          setBuyer(parsed);
-          setHasStoredData(true);
-          setFullName(parsed.fullName);
-          setEmail(parsed.email);
-          setPhone(parsed.phone || '');
-          setCpf(parsed.cpf || '');
-          setCompanyRole(parsed.companyRole || '');
-
-          // Automatically record confirmed sale in Firestore if not yet recorded in this session
-          recordConfirmedSale(parsed, existingVoucher);
-          return;
-        }
+        if (parsed.fullName) setFullName(parsed.fullName);
+        if (parsed.email) setEmail(parsed.email);
+        if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.cpf) setCpf(parsed.cpf);
+        if (parsed.companyRole) setCompanyRole(parsed.companyRole);
       }
     } catch {
       // ignore
     }
 
-    setIsProcessing(false);
+    // Check if already submitted in this session
+    const recordedId = sessionStorage.getItem(RECORDED_SESSION_KEY);
+    if (recordedId) {
+      setIsSubmitted(true);
+      const savedTime = sessionStorage.getItem('performance360_purchase_time');
+      if (savedTime) setLastPurchaseTime(savedTime);
+    }
   }, []);
 
-  const recordConfirmedSale = async (data: BuyerData, code: string) => {
-    const alreadyRecorded = sessionStorage.getItem(RECORDED_SESSION_KEY);
-    if (alreadyRecorded) {
-      setIsProcessing(false);
-      return;
-    }
-
-    try {
-      // URL parameters from Mercado Pago
-      const urlParams = new URLSearchParams(window.location.search);
-      const paymentId = urlParams.get('payment_id') || urlParams.get('collection_id') || 'mpago_link';
-      const paymentStatus = urlParams.get('status') || urlParams.get('collection_status') || 'approved';
-
-      const docRef = await addDoc(collection(db, 'sales'), {
-        customerName: data.fullName,
-        email: data.email,
-        phone: data.phone,
-        cpf: data.cpf,
-        ticketType: 'Passaporte Oficial Performance 360º',
-        attendeesCount: 1,
-        amount: SUMMIT_EVENT.price,
-        paymentMethod: 'credit_card',
-        status: 'confirmed', // CONFIRMED status for the Dashboard!
-        notes: `Pagamento concluído Mercado Pago (ID: ${paymentId}, Status: ${paymentStatus}). Voucher: ${code}. Cargo: ${data.companyRole || 'Geral'}`,
-        origin: 'online',
-        createdAt: serverTimestamp(),
-      });
-
-      sessionStorage.setItem(RECORDED_SESSION_KEY, docRef.id);
-    } catch (err) {
-      console.warn('Erro ao registrar venda confirmada no Firestore:', err);
-    } finally {
-      setIsProcessing(false);
-    }
+  const buildWhatsAppMessage = (
+    nameVal: string,
+    phoneVal: string,
+    emailVal: string,
+    cpfVal: string,
+    roleVal: string,
+    methodVal: string,
+    timeVal: string,
+    codeVal: string
+  ) => {
+    return (
+      `🚨 *NOVA COMPRA CONFIRMADA - WORKSHOP PERFORMANCE 360º* 🚨\n\n` +
+      `👤 *Nome no Crachá:* ${nameVal}\n` +
+      `📱 *WhatsApp:* ${phoneVal}\n` +
+      `📧 *E-mail:* ${emailVal}\n` +
+      `📄 *CPF:* ${cpfVal}\n` +
+      `💼 *Cargo / Especialidade:* ${roleVal || 'Participante VIP'}\n\n` +
+      `💳 *Método Usado na Compra:* ${methodVal}\n` +
+      `⏰ *Data e Hora da Compra:* ${timeVal}\n` +
+      `🎫 *Código do Voucher:* ${codeVal}\n` +
+      `💰 *Valor Pago:* ${formatCurrency(SUMMIT_EVENT.price)}\n\n` +
+      `🏛️ *Evento:* WORKSHOP - T-Forcetreining (Academia Dragon)\n` +
+      `📅 *Data do Evento:* 20 de Fevereiro às 15:00\n\n` +
+      `✅ _Dados computados com sucesso no Dashboard e crachá liberado!_`
+    );
   };
 
-  const handleManualSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs: { [key: string]: string } = {};
 
     if (!fullName.trim() || fullName.trim().length < 3) {
-      errs.fullName = 'Informe seu nome completo';
+      errs.fullName = 'Informe seu nome completo para o crachá';
     }
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       errs.email = 'Informe um e-mail válido';
     }
-    if (phone.replace(/\D/g, '').length < 10) {
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.length < 10) {
       errs.phone = 'Informe seu WhatsApp com DDD';
     }
-    if (!cpf.trim() || !validateCPF(cpf)) {
-      errs.cpf = 'Informe um CPF válido';
+
+    const cleanCpf = cpf.replace(/\D/g, '');
+    if (cleanCpf.length !== 11) {
+      errs.cpf = 'Informe seu CPF com 11 dígitos';
     }
 
     setFormErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    setIsManualSubmitting(true);
-    const manualData: BuyerData = {
+    setIsSubmitting(true);
+
+    const now = new Date();
+    const formattedDateTime = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR')}`;
+    setLastPurchaseTime(formattedDateTime);
+    sessionStorage.setItem('performance360_purchase_time', formattedDateTime);
+
+    const buyerData: BuyerData = {
       fullName: fullName.trim(),
       email: email.trim().toLowerCase(),
       phone: phone.trim(),
       cpf: cpf.trim(),
-      companyRole: companyRole.trim(),
-      registeredAt: new Date().toISOString(),
+      companyRole: companyRole.trim() || 'Participante VIP',
+      registeredAt: now.toISOString(),
     };
 
+    setBuyer(buyerData);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(buyerData));
+
+    // 1. Compute and register into Firestore DB for the Dashboard
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(manualData));
-      setBuyer(manualData);
-      setHasStoredData(true);
-      await recordConfirmedSale(manualData, voucherCode);
-    } finally {
-      setIsManualSubmitting(false);
+      const docRef = await addDoc(collection(db, 'sales'), {
+        customerName: buyerData.fullName,
+        email: buyerData.email,
+        phone: buyerData.phone,
+        cpf: buyerData.cpf,
+        companyRole: buyerData.companyRole,
+        ticketType: 'Passaporte Oficial Performance 360º',
+        attendeesCount: 1,
+        amount: SUMMIT_EVENT.price,
+        paymentMethod: paymentMethod === 'Pix Instantâneo' ? 'pix' : (paymentMethod === 'Cartão de Crédito' ? 'credit_card' : 'bank_transfer'),
+        paymentMethodLabel: paymentMethod,
+        status: 'confirmed',
+        purchaseTime: formattedDateTime,
+        voucherCode: voucherCode,
+        notes: `Compra confirmada Mercado Pago. Método: ${paymentMethod}. Horário: ${formattedDateTime}. Notificado no WhatsApp (64 99336-7849).`,
+        origin: 'online',
+        createdAt: serverTimestamp(),
+      });
+      sessionStorage.setItem(RECORDED_SESSION_KEY, docRef.id);
+    } catch (err) {
+      console.warn('Erro ao salvar no Firestore:', err);
     }
+
+    // 2. Automatically dispatch to WhatsApp 64 99336-7849
+    try {
+      const message = buildWhatsAppMessage(
+        buyerData.fullName,
+        buyerData.phone,
+        buyerData.email,
+        buyerData.cpf,
+        buyerData.companyRole || '',
+        paymentMethod,
+        formattedDateTime,
+        voucherCode
+      );
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=${ORGANIZER_WHATSAPP}&text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      setWhatsappSent(true);
+    } catch (err) {
+      console.warn('Erro ao abrir WhatsApp:', err);
+    } finally {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+    }
+  };
+
+  const handleOpenWhatsAppManual = () => {
+    const currentName = buyer?.fullName || fullName;
+    const currentPhone = buyer?.phone || phone;
+    const currentEmail = buyer?.email || email;
+    const currentCpf = buyer?.cpf || cpf;
+    const currentRole = buyer?.companyRole || companyRole;
+    const currentTime = lastPurchaseTime || `${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`;
+
+    const message = buildWhatsAppMessage(
+      currentName,
+      currentPhone,
+      currentEmail,
+      currentCpf,
+      currentRole,
+      paymentMethod,
+      currentTime,
+      voucherCode
+    );
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${ORGANIZER_WHATSAPP}&text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    setWhatsappSent(true);
   };
 
   const handlePrint = () => {
     window.print();
   };
 
-  const handleShareWhatsApp = () => {
-    if (!buyer) return;
-    const msg = `*Voucher Oficial - Performance 360º*\n\n` +
-      `Participante: ${buyer.fullName}\n` +
-      `CPF: ${buyer.cpf}\n` +
-      `Código: ${voucherCode}\n` +
-      `Evento: 20 de Fevereiro, Academia Dragon Gym\n` +
-      `Status: Pagamento Aprovado e Credencial Garantida!\n\n` +
-      `Apresente este voucher no credenciamento às 07:30 para retirar seu crachá físico.`;
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank');
-  };
-
   const handleCopyReturnLink = () => {
-    const returnUrl = window.location.href;
+    const returnUrl = `${window.location.origin}/?mode=retorno-pagamento`;
     navigator.clipboard.writeText(returnUrl);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
@@ -200,25 +254,15 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
 
           <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Retorno de Pagamento Mercado Pago</span>
+            <span>Retorno de Pagamento Oficial</span>
           </div>
         </div>
       </header>
 
       {/* Main Content Viewport */}
       <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-8 flex flex-col justify-center">
-        {isProcessing ? (
-          <div className="text-center py-20 bg-neutral-900/40 rounded-3xl border border-neutral-800 p-8">
-            <Loader2 className="w-12 h-12 text-[#E50914] animate-spin mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-white font-display">
-              Validando pagamento com o Mercado Pago...
-            </h2>
-            <p className="text-sm text-neutral-400 mt-2">
-              Registrando seus dados oficiais de credenciamento na lista do evento.
-            </p>
-          </div>
-        ) : !buyer ? (
-          /* Manual Identification Form if user arrived without stored data */
+        {!isSubmitted ? (
+          /* Buyer Data Collection Form (Returns from Payment Link) */
           <div className="bg-[#111111] border border-neutral-800 rounded-3xl p-6 sm:p-10 shadow-2xl max-w-xl mx-auto w-full animate-in fade-in duration-300">
             <div className="text-center mb-6">
               <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto mb-3 shadow-lg">
@@ -232,7 +276,8 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
               </h2>
             </div>
 
-            <form onSubmit={handleManualSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Nome Completo */}
               <div>
                 <label className="block text-xs font-medium text-neutral-300 mb-1">
                   Nome Completo no Crachá <span className="text-[#E50914]">*</span>
@@ -241,17 +286,24 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                   <input
                     type="text"
                     value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    onChange={(e) => {
+                      setFullName(e.target.value);
+                      if (formErrors.fullName) setFormErrors((prev) => ({ ...prev, fullName: '' }));
+                    }}
                     placeholder="Ex: Carlos Eduardo de Oliveira"
                     className="w-full pl-9 pr-3 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-[#E50914]"
                   />
                   <User className="w-4 h-4 text-neutral-500 absolute left-3 top-3" />
                 </div>
                 {formErrors.fullName && (
-                  <p className="mt-1 text-xs text-[#E50914]">{formErrors.fullName}</p>
+                  <p className="mt-1 text-xs text-[#E50914] flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3 shrink-0" />
+                    <span>{formErrors.fullName}</span>
+                  </p>
                 )}
               </div>
 
+              {/* Email & Telefone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-neutral-300 mb-1">
@@ -261,14 +313,20 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (formErrors.email) setFormErrors((prev) => ({ ...prev, email: '' }));
+                      }}
                       placeholder="carlos@email.com"
                       className="w-full pl-9 pr-3 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-[#E50914]"
                     />
                     <Mail className="w-4 h-4 text-neutral-500 absolute left-3 top-3" />
                   </div>
                   {formErrors.email && (
-                    <p className="mt-1 text-xs text-[#E50914]">{formErrors.email}</p>
+                    <p className="mt-1 text-xs text-[#E50914] flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3 shrink-0" />
+                      <span>{formErrors.email}</span>
+                    </p>
                   )}
                 </div>
 
@@ -280,18 +338,25 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                     <input
                       type="tel"
                       value={phone}
-                      onChange={(e) => setPhone(formatPhone(e.target.value))}
-                      placeholder="(11) 98765-4321"
+                      onChange={(e) => {
+                        setPhone(formatPhone(e.target.value));
+                        if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: '' }));
+                      }}
+                      placeholder="(64) 99336-7849"
                       className="w-full pl-9 pr-3 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-[#E50914] font-mono"
                     />
                     <Phone className="w-4 h-4 text-neutral-500 absolute left-3 top-3" />
                   </div>
                   {formErrors.phone && (
-                    <p className="mt-1 text-xs text-[#E50914]">{formErrors.phone}</p>
+                    <p className="mt-1 text-xs text-[#E50914] flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3 shrink-0" />
+                      <span>{formErrors.phone}</span>
+                    </p>
                   )}
                 </div>
               </div>
 
+              {/* CPF & Cargo */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-neutral-300 mb-1">
@@ -300,13 +365,19 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                   <input
                     type="text"
                     value={cpf}
-                    onChange={(e) => setCpf(formatCPF(e.target.value))}
+                    onChange={(e) => {
+                      setCpf(formatCPF(e.target.value));
+                      if (formErrors.cpf) setFormErrors((prev) => ({ ...prev, cpf: '' }));
+                    }}
                     placeholder="000.000.000-00"
                     maxLength={14}
                     className="w-full px-3 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-[#E50914] font-mono"
                   />
                   {formErrors.cpf && (
-                    <p className="mt-1 text-xs text-[#E50914]">{formErrors.cpf}</p>
+                    <p className="mt-1 text-xs text-[#E50914] flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3 shrink-0" />
+                      <span>{formErrors.cpf}</span>
+                    </p>
                   )}
                 </div>
 
@@ -324,12 +395,55 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                 </div>
               </div>
 
+              {/* Método de Pagamento Usado */}
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-2">
+                  Método usado na compra <span className="text-[#E50914]">*</span>
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('Pix Instantâneo')}
+                    className={`py-2 px-3 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                      paymentMethod === 'Pix Instantâneo'
+                        ? 'bg-emerald-500/15 border-emerald-500 text-emerald-300 font-bold'
+                        : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700'
+                    }`}
+                  >
+                    <span>⚡ Pix</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('Cartão de Crédito')}
+                    className={`py-2 px-3 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                      paymentMethod === 'Cartão de Crédito'
+                        ? 'bg-[#E50914]/15 border-[#E50914] text-white font-bold'
+                        : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700'
+                    }`}
+                  >
+                    <span>💳 Cartão</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('Boleto Bancário')}
+                    className={`py-2 px-3 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                      paymentMethod === 'Boleto Bancário'
+                        ? 'bg-blue-500/15 border-blue-500 text-blue-300 font-bold'
+                        : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700'
+                    }`}
+                  >
+                    <span>🧾 Boleto</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isManualSubmitting}
+                disabled={isSubmitting}
                 className="w-full mt-4 py-4 px-6 rounded-xl font-bold text-base text-white bg-[#E50914] hover:bg-[#b80710] transition-all shadow-xl shadow-[#E50914]/30 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
-                {isManualSubmitting ? (
+                {isSubmitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
                     <span>Enviando dados...</span>
@@ -340,23 +454,27 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                   </>
                 )}
               </button>
+
+              <p className="text-[11px] text-neutral-500 text-center pt-1 font-mono">
+                Ao clicar em enviar dados, as informações são computadas no Dashboard e enviadas automaticamente para o WhatsApp (64 99336-7849).
+              </p>
             </form>
           </div>
         ) : (
           /* CONFIRMED DIGITAL VOUCHER & BADGE TICKET */
           <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
             {/* Top Success Notice (Hidden on Print) */}
-            <div className="print:hidden p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="print:hidden p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
-                    Pagamento Aprovado com Sucesso!
+                    Dados Computados & Inscrição Confirmada!
                   </h3>
                   <p className="text-xs text-emerald-300">
-                    Seus dados foram salvos no banco de dados e registrados na lista oficial de presença do evento.
+                    Registrado com sucesso no Dashboard e enviado para o WhatsApp da organização: <strong className="text-white">(64) 99336-7849</strong>.
                   </p>
                 </div>
               </div>
@@ -364,19 +482,19 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
+                  onClick={handleOpenWhatsAppManual}
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-emerald-600/25 cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>WhatsApp (64 99336-7849)</span>
+                </button>
+                <button
+                  type="button"
                   onClick={handlePrint}
                   className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
                 >
                   <Printer className="w-4 h-4 text-[#E50914]" />
-                  <span>Imprimir Voucher</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleShareWhatsApp}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition cursor-pointer"
-                >
-                  <Share2 className="w-4 h-4" />
-                  <span>WhatsApp</span>
+                  <span>Imprimir</span>
                 </button>
               </div>
             </div>
@@ -408,25 +526,25 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                       Nome impresso no crachá de policarbonato:
                     </span>
                     <div className="text-xl sm:text-2xl font-extrabold text-white print:text-black uppercase tracking-tight">
-                      {buyer.fullName}
+                      {buyer?.fullName || fullName}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 pt-3 border-t border-neutral-800 print:border-neutral-300 text-xs">
                       <div>
                         <span className="text-neutral-500 print:text-neutral-600 block">CPF</span>
-                        <span className="font-mono font-bold text-neutral-200 print:text-neutral-800">{buyer.cpf}</span>
+                        <span className="font-mono font-bold text-neutral-200 print:text-neutral-800">{buyer?.cpf || cpf}</span>
                       </div>
                       <div>
                         <span className="text-neutral-500 print:text-neutral-600 block">Cargo / Especialidade</span>
-                        <span className="font-semibold text-neutral-200 print:text-neutral-800">{buyer.companyRole || 'Participante VIP'}</span>
+                        <span className="font-semibold text-neutral-200 print:text-neutral-800">{buyer?.companyRole || companyRole || 'Participante VIP'}</span>
                       </div>
                       <div>
-                        <span className="text-neutral-500 print:text-neutral-600 block">E-mail</span>
-                        <span className="text-neutral-200 print:text-neutral-800 truncate block">{buyer.email}</span>
+                        <span className="text-neutral-500 print:text-neutral-600 block">Método de Pagamento</span>
+                        <span className="font-semibold text-emerald-400 print:text-emerald-700">{paymentMethod}</span>
                       </div>
                       <div>
-                        <span className="text-neutral-500 print:text-neutral-600 block">WhatsApp</span>
-                        <span className="font-mono text-neutral-200 print:text-neutral-800">{buyer.phone}</span>
+                        <span className="text-neutral-500 print:text-neutral-600 block">Horário da Confirmação</span>
+                        <span className="font-mono text-neutral-200 print:text-neutral-800">{lastPurchaseTime || 'Registrado'}</span>
                       </div>
                     </div>
                   </div>
@@ -467,7 +585,7 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
 
                   <div className="p-3 bg-white border border-neutral-200 rounded-xl shadow-inner mb-3">
                     <QRCodeSVG
-                      value={`P360-CHECKIN:${buyer.cpf}:${voucherCode}`}
+                      value={`P360-CHECKIN:${buyer?.cpf || cpf}:${voucherCode}`}
                       size={150}
                       level="H"
                       includeMargin={false}
@@ -479,7 +597,7 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                   </span>
 
                   <div className="mt-3 text-center text-[10px] text-neutral-600 leading-tight">
-                    Apresente este QR Code no totem de credenciamento às 07:30 para retirar seu crachá.
+                    Apresente este QR Code no totem de credenciamento às 14:20 para retirar seu crachá oficial.
                   </div>
                 </div>
               </div>
@@ -488,23 +606,32 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
               <div className="mt-8 pt-4 border-t border-neutral-800 print:border-neutral-300 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-400 print:text-neutral-700">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span>Passaporte All-Access Oficial · R$ 200,00 Pago via Mercado Pago</span>
+                  <span>Passaporte All-Access Oficial · R$ 200,00 Pago via Mercado Pago ({paymentMethod})</span>
                 </div>
                 <span className="font-mono text-[11px]">
-                  Emissão: {new Date().toLocaleDateString('pt-BR')}
+                  Confirmado: {lastPurchaseTime || new Date().toLocaleDateString('pt-BR')}
                 </span>
               </div>
             </div>
 
-            {/* Back to Site Button (Hidden on Print) */}
-            <div className="print:hidden text-center pt-2">
+            {/* Actions: Re-open WhatsApp & Back to Site Button (Hidden on Print) */}
+            <div className="print:hidden flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={handleOpenWhatsAppManual}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl shadow-emerald-600/30 transition cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Enviar Confirmação para WhatsApp (64 99336-7849)</span>
+              </button>
+
               <button
                 type="button"
                 onClick={onBackToSite}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-white font-bold text-sm transition cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-white font-bold text-sm transition cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4 text-[#E50914]" />
-                <span>Voltar à Página Principal do Evento</span>
+                <span>Voltar ao Site Oficial</span>
               </button>
             </div>
           </div>

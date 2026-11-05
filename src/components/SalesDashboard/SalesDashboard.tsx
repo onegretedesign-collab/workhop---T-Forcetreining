@@ -99,7 +99,11 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
             ticketType: data.ticketType || 'Passaporte Completo',
             attendeesCount: Number(data.attendeesCount) || 1,
             amount: Number(data.amount) || 0,
-            paymentMethod: (data.paymentMethod as PaymentMethod) || 'pix',
+            paymentMethod: (
+              data.paymentMethod === 'Pix Instantâneo' || data.paymentMethod === 'pix' ? 'pix' :
+              data.paymentMethod === 'Cartão de Crédito' || data.paymentMethod === 'credit_card' ? 'credit_card' :
+              (data.paymentMethod as PaymentMethod) || 'pix'
+            ),
             status: (data.status as SaleStatus) || 'confirmed',
             notes: data.notes || '',
             origin: data.origin === 'online' ? 'online' : 'manual',

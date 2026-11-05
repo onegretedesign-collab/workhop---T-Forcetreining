@@ -38,7 +38,7 @@ export const SUMMIT_EVENT = {
   maxInstallments: 12,
   spotsLeft: 42,
   totalSpots: 500,
-  checkoutUrl: "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=327248121-a84ac1f5-edd0-4722-9e37-f06fd48ea7a2",
+  checkoutUrl: "https://mpago.la/1YbDQRy",
 };
 
 export const BANNER_PRESETS: BannerPreset[] = [

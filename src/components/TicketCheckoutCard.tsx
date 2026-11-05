@@ -107,7 +107,7 @@ export const TicketCheckoutCard: React.FC = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(buyer));
 
       // Register intent in Firestore sales as pending
-      const docRef = await addDoc(collection(db, 'sales'), {
+      await addDoc(collection(db, 'sales'), {
         customerName: buyer.fullName,
         email: buyer.email,
         phone: buyer.phone,
@@ -121,27 +121,9 @@ export const TicketCheckoutCard: React.FC = () => {
         origin: 'online',
         createdAt: serverTimestamp(),
       });
-      createdSaleId = docRef.id;
       setLeadSaved(true);
     } catch (err) {
       console.warn('Erro ao registrar intenção no banco:', err);
-    }
-
-    // Call dynamic preference endpoint
-    try {
-      const res = await fetch('/api/create-preference', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ buyer, saleId: createdSaleId }),
-      });
-      if (res.ok) {
-        const pref = await res.json();
-        if (pref.url) {
-          setPaymentUrl(pref.url);
-        }
-      }
-    } catch {
-      // Gracefully keeps default SUMMIT_EVENT.checkoutUrl
     } finally {
       setIsSaving(false);
       setStep(2);

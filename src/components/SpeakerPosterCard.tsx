@@ -20,7 +20,6 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
   const [showPurePhoto, setShowPurePhoto] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isManualRevealed, setIsManualRevealed] = useState<boolean | null>(null);
-  const [fadeProgress, setFadeProgress] = useState(0);
   const [scrollRevealed, setScrollRevealed] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -40,33 +39,21 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
     if (isModalView) return;
 
     const handleScroll = () => {
-      if (window.innerWidth >= 768) {
-        setFadeProgress(0);
+      if (typeof window === 'undefined' || window.innerWidth >= 768) {
         setScrollRevealed(false);
         return;
       }
 
       if (!cardRef.current) return;
       const rect = cardRef.current.getBoundingClientRect();
-      const vh = window.innerHeight;
+      const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+      if (vh <= 0) return;
 
       // Card mid point relative to viewport
       const cardMid = rect.top + rect.height * 0.45;
-      const startPoint = vh * 0.88; // When card is entering lower portion of screen
-      const endPoint = vh * 0.42;   // When card reaches prime reading area
-
-      if (cardMid > startPoint) {
-        setFadeProgress(0);
-        setScrollRevealed(false);
-      } else if (cardMid < endPoint) {
-        setFadeProgress(1);
-        setScrollRevealed(true);
-      } else {
-        const raw = (startPoint - cardMid) / (startPoint - endPoint);
-        const clamped = Math.max(0, Math.min(1, raw));
-        setFadeProgress(clamped);
-        setScrollRevealed(clamped >= 0.45);
-      }
+      // In the active reading zone when card mid is between 20% and 70% of viewport
+      const isInReadingZone = cardMid <= vh * 0.72 && rect.bottom >= vh * 0.20;
+      setScrollRevealed(isInReadingZone);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -85,20 +72,6 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
   const isRevealedOnMobile = isMobileActive && (
     isManualRevealed !== null ? isManualRevealed : scrollRevealed
   );
-
-  // Smooth photo opacity on mobile
-  const effectivePhotoOpacity = isMobileActive
-    ? (isManualRevealed !== null
-        ? (isManualRevealed ? 0.05 : 1)
-        : Math.max(0.05, 1 - fadeProgress * 0.95))
-    : 1;
-
-  // Smooth info layer opacity on mobile
-  const effectiveInfoOpacity = isMobileActive
-    ? (isManualRevealed !== null
-        ? (isManualRevealed ? 1 : 0)
-        : fadeProgress)
-    : 0;
 
   const handleCardClick = (e: React.MouseEvent) => {
     if (isMobileActive) {
@@ -146,27 +119,27 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
       <img
         src={speaker.photoUrl}
         alt={speaker.name}
-        style={{
-          opacity: effectivePhotoOpacity,
-          transform: isRevealedOnMobile ? 'scale(0.98)' : 'scale(1)',
-        }}
-        className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-all duration-500 pointer-events-none"
+        className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-500 pointer-events-none ${
+          isRevealedOnMobile ? 'opacity-5 scale-95' : 'opacity-100 scale-100 group-hover:scale-105'
+        }`}
         loading="lazy"
       />
 
       {/* Top subtle dark gradient vignette for readable text (when in photo mode) */}
-      {!showPurePhoto && (!isMobileActive || !isRevealedOnMobile) && (
+      {!showPurePhoto && (
         <div
-          style={{ opacity: isMobileActive ? effectivePhotoOpacity : 1 }}
-          className="absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-[#0A0A0A]/95 via-[#0A0A0A]/70 to-transparent pointer-events-none transition-opacity duration-300"
+          className={`absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-[#0A0A0A]/95 via-[#0A0A0A]/70 to-transparent pointer-events-none transition-opacity duration-300 ${
+            isRevealedOnMobile ? 'opacity-0' : 'opacity-100'
+          }`}
         />
       )}
 
       {/* Bottom dark gradient vignette for readable speaker name (when in photo mode) */}
-      {!showPurePhoto && (!isMobileActive || !isRevealedOnMobile) && (
+      {!showPurePhoto && (
         <div
-          style={{ opacity: isMobileActive ? effectivePhotoOpacity : 1 }}
-          className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/85 to-transparent pointer-events-none transition-opacity duration-300"
+          className={`absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/85 to-transparent pointer-events-none transition-opacity duration-300 ${
+            isRevealedOnMobile ? 'opacity-0' : 'opacity-100'
+          }`}
         />
       )}
 
@@ -177,12 +150,10 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
       {/* DESKTOP & PHOTO MODE CONTENT: Title, quote & bottom badges                */}
       {/* ========================================================================= */}
       <div
-        style={{
-          opacity: isMobileActive ? (isRevealedOnMobile ? 0 : 1) : (showPurePhoto ? 0 : 1),
-          pointerEvents: isMobileActive && isRevealedOnMobile ? 'none' : 'auto',
-        }}
         className={`relative z-10 flex flex-col justify-between h-full flex-1 transition-opacity duration-300 ${
-          isMobileActive && isRevealedOnMobile ? 'hidden' : 'flex'
+          isRevealedOnMobile
+            ? 'opacity-0 pointer-events-none'
+            : (showPurePhoto ? 'opacity-0 hover:opacity-100' : 'opacity-100')
         }`}
       >
         {/* Top Section: Watermark & Hook Quote */}
@@ -293,12 +264,10 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
       {/* ========================================================================= */}
       {isMobileActive && (
         <div
-          style={{
-            opacity: effectiveInfoOpacity,
-            pointerEvents: isRevealedOnMobile ? 'auto' : 'none',
-          }}
-          className={`absolute inset-0 z-20 p-5 sm:p-6 bg-[#0E0E0E]/95 backdrop-blur-md flex flex-col justify-between overflow-y-auto transition-opacity duration-300 ${
-            isRevealedOnMobile ? 'flex' : 'hidden'
+          className={`absolute inset-0 z-20 p-5 sm:p-6 bg-[#0E0E0E]/95 backdrop-blur-md flex flex-col justify-between overflow-y-auto transition-all duration-500 ${
+            isRevealedOnMobile
+              ? 'opacity-100 pointer-events-auto translate-y-0'
+              : 'opacity-0 pointer-events-none translate-y-2'
           }`}
         >
           {/* Top Header inside revealed content */}
