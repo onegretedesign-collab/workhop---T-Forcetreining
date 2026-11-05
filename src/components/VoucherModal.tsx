@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { VoucherData } from './CheckoutModal';
 import { SUMMIT_EVENT } from '../data/summitData';
 import { BannerGraphic } from './BannerGraphic';
 import { formatCurrency } from '../utils/formatters';
+import { compressPhotoToDataUrl } from '../utils/imageCompressor';
 import {
   Printer,
   Download,
@@ -11,9 +12,10 @@ import {
   Clock,
   MapPin,
   IdCard,
-  QrCode,
   ShieldCheck,
   Share2,
+  Camera,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 interface VoucherModalProps {
@@ -28,6 +30,35 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
   onClose,
 }) => {
   const printableRef = useRef<HTMLDivElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  const [badgePhoto, setBadgePhoto] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('performance360_badge_photo') || null;
+    } catch {
+      return null;
+    }
+  });
+
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    try {
+      const dataUrl = await compressPhotoToDataUrl(file, 640, 0.85);
+      setBadgePhoto(dataUrl);
+      try {
+        localStorage.setItem('performance360_badge_photo', dataUrl);
+      } catch {
+        // ignore
+      }
+    } catch (err) {
+      console.error('Erro ao processar foto:', err);
+    } finally {
+      if (e.target) e.target.value = '';
+    }
+  };
 
   if (!isOpen || !voucher) return null;
 
@@ -199,58 +230,103 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               </div>
             </div>
 
-            {/* QR Code Validation Section */}
-            <div className="p-5 rounded-2xl bg-white text-black flex flex-col sm:flex-row items-center justify-between gap-5 print-page-break">
-              <div className="flex items-center gap-4">
-                <div className="w-24 h-24 bg-white border-2 border-black p-1 rounded-xl shrink-0 flex items-center justify-center">
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
-                    {/* Stylized QR Matrix */}
-                    <rect width="100" height="100" fill="#ffffff" />
-                    <rect x="5" y="5" width="28" height="28" fill="#000000" />
-                    <rect x="10" y="10" width="18" height="18" fill="#ffffff" />
-                    <rect x="14" y="14" width="10" height="10" fill="#000000" />
+            {/* Badge Photo & Buyer Information Section (Replacing QR Code) */}
+            <div className="p-5 rounded-2xl bg-white text-black flex flex-col sm:flex-row items-center justify-between gap-5 print-page-break border border-neutral-300">
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="user"
+                className="hidden"
+                onChange={handlePhotoSelect}
+              />
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoSelect}
+              />
 
-                    <rect x="67" y="5" width="28" height="28" fill="#000000" />
-                    <rect x="72" y="10" width="18" height="18" fill="#ffffff" />
-                    <rect x="76" y="14" width="10" height="10" fill="#000000" />
-
-                    <rect x="5" y="67" width="28" height="28" fill="#000000" />
-                    <rect x="10" y="72" width="18" height="18" fill="#ffffff" />
-                    <rect x="14" y="76" width="10" height="10" fill="#000000" />
-
-                    <rect x="38" y="10" width="8" height="8" fill="#000000" />
-                    <rect x="50" y="16" width="8" height="8" fill="#000000" />
-                    <rect x="42" y="42" width="16" height="16" fill="#E50914" rx="2" />
-                    <rect x="68" y="40" width="8" height="8" fill="#000000" />
-                    <rect x="80" y="50" width="8" height="8" fill="#000000" />
-                    <rect x="38" y="72" width="8" height="8" fill="#000000" />
-                    <rect x="50" y="80" width="8" height="8" fill="#000000" />
-                    <rect x="68" y="72" width="8" height="8" fill="#000000" />
-                    <rect x="80" y="82" width="10" height="10" fill="#000000" />
-                  </svg>
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                {/* Photo Frame in place of QR Code */}
+                <div className="relative w-24 h-32 sm:w-28 sm:h-36 bg-neutral-100 border-2 border-neutral-300 rounded-xl overflow-hidden shrink-0 flex items-center justify-center shadow-inner group">
+                  {badgePhoto ? (
+                    <>
+                      <img
+                        src={badgePhoto}
+                        alt="Foto do Crachá"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 print:hidden">
+                        <button
+                          type="button"
+                          onClick={() => cameraInputRef.current?.click()}
+                          className="p-1.5 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition"
+                          title="Tirar foto"
+                        >
+                          <Camera className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => galleryInputRef.current?.click()}
+                          className="p-1.5 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition"
+                          title="Galeria"
+                        >
+                          <ImageIcon className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center p-2 text-center">
+                      <Camera className="w-6 h-6 text-neutral-400 mb-1" />
+                      <span className="text-[10px] font-bold text-neutral-700 leading-tight">
+                        Foto Crachá
+                      </span>
+                    </div>
+                  )}
                 </div>
 
-                <div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 block">
-                    LEITURA ÓPTICA DE ACESSO
+                <div className="flex-1">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 font-bold block">
+                    FOTO DO CRACHÁ OFICIAL
                   </span>
                   <h4 className="text-base font-extrabold font-display">
-                    QR Code de Acesso Rápido
+                    {voucher.badgeName}
                   </h4>
-                  <p className="text-xs text-neutral-700 max-w-xs mt-0.5">
-                    Válido para entrada única e emissão instantânea do crachá nominal na data do evento.
+                  <p className="text-xs text-neutral-600 max-w-xs mt-0.5">
+                    {voucher.companyRole || 'Participante VIP'} · CPF: {voucher.cpf}
                   </p>
+
+                  <div className="print:hidden flex items-center gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => cameraInputRef.current?.click()}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#E50914] hover:bg-[#b80710] text-white text-[11px] font-bold transition shadow-sm cursor-pointer"
+                    >
+                      <Camera className="w-3 h-3" />
+                      <span>Tirar Foto</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => galleryInputRef.current?.click()}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white text-[11px] font-bold transition shadow-sm cursor-pointer"
+                    >
+                      <ImageIcon className="w-3 h-3" />
+                      <span>Galeria</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="text-right font-mono text-xs text-neutral-600 sm:border-l sm:border-neutral-200 sm:pl-6">
+              <div className="w-full sm:w-auto text-left sm:text-right font-mono text-xs text-neutral-600 sm:border-l sm:border-neutral-200 sm:pl-6 space-y-1">
                 <div>Emitido em: {voucher.purchaseDate}</div>
-                <div className="font-bold text-black mt-0.5">
+                <div className="font-bold text-black text-sm">
                   ID: {voucher.voucherId}
                 </div>
-                <div className="text-[10px] text-emerald-600 font-semibold mt-1 flex items-center justify-end gap-1">
+                <div className="text-[10px] text-emerald-600 font-semibold flex items-center sm:justify-end gap-1">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>ASSINATURA DIGITAL VÁLIDA</span>
+                  <span>IDENTIFICAÇÃO CADASTRADA</span>
                 </div>
               </div>
             </div>

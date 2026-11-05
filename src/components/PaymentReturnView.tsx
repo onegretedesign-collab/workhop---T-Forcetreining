@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import React, { useState, useEffect, useRef } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SUMMIT_EVENT } from '../data/summitData';
 import { formatCPF, validateCPF, formatPhone, formatCurrency } from '../utils/formatters';
+import { compressPhotoToDataUrl } from '../utils/imageCompressor';
 import { BuyerData } from './TicketCheckoutCard';
 import {
   CheckCircle2,
   Ticket,
-  QrCode,
   Printer,
   Share2,
   Calendar,
@@ -28,6 +27,9 @@ import {
   CreditCard,
   MessageCircle,
   Paperclip,
+  Camera,
+  Image as ImageIcon,
+  Trash2,
 } from 'lucide-react';
 
 interface PaymentReturnViewProps {
@@ -35,6 +37,7 @@ interface PaymentReturnViewProps {
 }
 
 const STORAGE_KEY = 'performance360_buyer_data';
+const PHOTO_STORAGE_KEY = 'performance360_badge_photo';
 const RECORDED_SESSION_KEY = 'performance360_recorded_sale_id';
 const ORGANIZER_WHATSAPP = '5564993367849'; // (64) 99336-7849
 
@@ -43,6 +46,18 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
   const [voucherCode, setVoucherCode] = useState<string>('');
   const [copiedLink, setCopiedLink] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Badge Photo State (Captured from camera or selected from device gallery)
+  const [badgePhoto, setBadgePhoto] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(PHOTO_STORAGE_KEY) || null;
+    } catch {
+      return null;
+    }
+  });
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   // Form fields
   const [fullName, setFullName] = useState('');
@@ -89,6 +104,39 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
     }
   }, []);
 
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione um arquivo de imagem válido (JPG, PNG).');
+      return;
+    }
+    try {
+      setIsProcessingPhoto(true);
+      const dataUrl = await compressPhotoToDataUrl(file, 640, 0.85);
+      setBadgePhoto(dataUrl);
+      try {
+        localStorage.setItem(PHOTO_STORAGE_KEY, dataUrl);
+      } catch {
+        // quota limit fallback
+      }
+    } catch (err) {
+      console.error('Erro ao processar imagem do crachá:', err);
+    } finally {
+      setIsProcessingPhoto(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setBadgePhoto(null);
+    try {
+      localStorage.removeItem(PHOTO_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+  };
+
   const buildWhatsAppMessage = (
     nameVal: string,
     phoneVal: string,
@@ -106,6 +154,7 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
       `📧 *E-mail:* ${emailVal}\n` +
       `📄 *CPF:* ${cpfVal}\n` +
       `💼 *Cargo / Especialidade:* ${roleVal || 'Participante VIP'}\n\n` +
+      (badgePhoto ? `📸 *Foto do Crachá:* Anexada com sucesso para credencial\n\n` : '') +
       `💳 *Método Usado na Compra:* ${methodVal}\n` +
       `⏰ *Data e Hora da Compra:* ${timeVal}\n` +
       `🎫 *Código do Voucher:* ${codeVal}\n` +
@@ -176,6 +225,7 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
         status: 'confirmed',
         purchaseTime: formattedDateTime,
         voucherCode: voucherCode,
+        photoUrl: badgePhoto || '',
         notes: `Compra confirmada Mercado Pago. Método: ${paymentMethod}. Horário: ${formattedDateTime}. Notificado no WhatsApp (64 99336-7849).`,
         origin: 'online',
         createdAt: serverTimestamp(),
@@ -250,6 +300,23 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
 
   return (
     <div className="min-h-screen bg-[#070707] text-neutral-100 flex flex-col justify-between selection:bg-[#E50914] selection:text-white">
+      {/* Hidden file inputs for Camera and Gallery */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="user"
+        className="hidden"
+        onChange={handlePhotoSelect}
+      />
+      <input
+        ref={galleryInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handlePhotoSelect}
+      />
+
       {/* Top Banner & Navigation */}
       <header className="print:hidden border-b border-neutral-800 bg-[#0C0C0C]/90 backdrop-blur-md px-4 sm:px-8 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
@@ -462,6 +529,69 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                 </div>
               </div>
 
+              {/* Foto para o Crachá (Opcional - Tirar Foto ou Escolher da Galeria) */}
+              <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-neutral-300 block">
+                    Foto do Crachá Nominal (Opcional)
+                  </span>
+                  <span className="text-[10px] text-neutral-500 font-mono">
+                    {badgePhoto ? 'Foto Carregada' : 'Pode anexar agora ou depois'}
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <div className="relative w-12 h-14 rounded-lg bg-neutral-900 border border-neutral-700 overflow-hidden flex items-center justify-center shrink-0">
+                      {isProcessingPhoto ? (
+                        <Loader2 className="w-5 h-5 animate-spin text-[#E50914]" />
+                      ) : badgePhoto ? (
+                        <img src={badgePhoto} alt="Prévia" className="w-full h-full object-cover" />
+                      ) : (
+                        <Camera className="w-5 h-5 text-neutral-500" />
+                      )}
+                    </div>
+                    <div className="text-left">
+                      <span className="text-xs font-bold text-white block">
+                        {badgePhoto ? 'Foto vinculada ao crachá' : 'Anexar sua foto'}
+                      </span>
+                      <p className="text-[11px] text-neutral-400">
+                        {badgePhoto ? 'Você pode trocar a qualquer momento' : 'Tire uma foto sua agora ou escolha da sua galeria'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      onClick={() => cameraInputRef.current?.click()}
+                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#E50914] hover:bg-[#b80710] text-white text-xs font-bold transition cursor-pointer"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Tirar Foto</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => galleryInputRef.current?.click()}
+                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-200 text-xs font-semibold transition cursor-pointer"
+                    >
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Galeria</span>
+                    </button>
+                    {badgePhoto && (
+                      <button
+                        type="button"
+                        onClick={handleRemovePhoto}
+                        className="p-2 rounded-lg bg-neutral-900 hover:bg-red-950 border border-neutral-700 hover:border-red-500/50 text-neutral-400 hover:text-red-400 transition cursor-pointer"
+                        title="Remover foto"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               {/* Submit Button */}
               <button
                 type="submit"
@@ -615,27 +745,130 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                   </div>
                 </div>
 
-                {/* Right: QR Code & Verification Stub */}
-                <div className="md:w-64 flex flex-col items-center justify-center p-6 rounded-2xl bg-white text-black shadow-lg border border-neutral-300">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 font-bold mb-2">
-                    Check-in na Portaria
-                  </span>
+                {/* Right: Badge Photo & Personal Information */}
+                <div className="md:w-72 flex flex-col items-center justify-between p-5 rounded-2xl bg-white text-black shadow-xl border border-neutral-300 print:border-black shrink-0">
+                  <div className="w-full text-center">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-2">
+                      Foto do Crachá Nominal
+                    </span>
 
-                  <div className="p-3 bg-white border border-neutral-200 rounded-xl shadow-inner mb-3">
-                    <QRCodeSVG
-                      value={`P360-CHECKIN:${buyer?.cpf || cpf}:${voucherCode}`}
-                      size={150}
-                      level="H"
-                      includeMargin={false}
-                    />
+                    {/* Photo Container in place of the QR Code */}
+                    <div className="relative w-36 h-48 sm:w-40 sm:h-52 mx-auto bg-neutral-100 border-2 border-neutral-300 rounded-2xl overflow-hidden shadow-inner flex flex-col items-center justify-center group mb-3">
+                      {isProcessingPhoto ? (
+                        <div className="flex flex-col items-center justify-center p-4 text-center">
+                          <Loader2 className="w-6 h-6 animate-spin text-[#E50914] mb-2" />
+                          <span className="text-[11px] font-bold text-neutral-700">Processando foto...</span>
+                        </div>
+                      ) : badgePhoto ? (
+                        <>
+                          <img
+                            src={badgePhoto}
+                            alt="Foto do Crachá"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 print:hidden">
+                            <button
+                              type="button"
+                              onClick={() => cameraInputRef.current?.click()}
+                              className="p-2 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition cursor-pointer"
+                              title="Tirar outra foto"
+                            >
+                              <Camera className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => galleryInputRef.current?.click()}
+                              className="p-2 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition cursor-pointer"
+                              title="Escolher da galeria"
+                            >
+                              <ImageIcon className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleRemovePhoto}
+                              className="p-2 rounded-full bg-black/80 text-white hover:bg-red-600 transition cursor-pointer"
+                              title="Remover foto"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-400 hover:text-white" />
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center p-3 text-center">
+                          <div className="w-14 h-14 rounded-full bg-neutral-200 text-neutral-500 flex items-center justify-center mb-2 shadow-inner">
+                            <Camera className="w-7 h-7" />
+                          </div>
+                          <span className="text-xs font-bold text-neutral-800 leading-tight">
+                            Foto para o Crachá
+                          </span>
+                          <span className="text-[10px] text-neutral-500 mt-1 max-w-[120px]">
+                            Tire uma foto ou escolha da galeria
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Buttons: Tirar Foto & Escolher da Galeria */}
+                    <div className="print:hidden w-full flex items-center justify-center gap-2 mb-3">
+                      <button
+                        type="button"
+                        onClick={() => cameraInputRef.current?.click()}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl bg-[#E50914] hover:bg-[#b80710] text-white text-[11px] font-bold transition shadow-md shadow-[#E50914]/20 cursor-pointer"
+                      >
+                        <Camera className="w-3.5 h-3.5" />
+                        <span>Tirar Foto</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => galleryInputRef.current?.click()}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-[11px] font-bold transition shadow-sm cursor-pointer"
+                      >
+                        <ImageIcon className="w-3.5 h-3.5" />
+                        <span>Galeria</span>
+                      </button>
+                    </div>
+
+                    {badgePhoto && (
+                      <div className="print:hidden text-[11px] text-emerald-600 font-bold mb-2 flex items-center justify-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Foto anexada com sucesso!</span>
+                      </div>
+                    )}
                   </div>
 
-                  <span className="font-mono font-extrabold text-sm tracking-wider text-[#E50914]">
-                    {voucherCode}
-                  </span>
+                  {/* Personal Information of the Buyer */}
+                  <div className="w-full bg-neutral-50 rounded-xl p-3.5 border border-neutral-200 text-left space-y-1.5 text-xs font-mono">
+                    <div className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider pb-1.5 border-b border-neutral-200 flex items-center justify-between">
+                      <span>Dados do Comprador</span>
+                      <span className="text-[#E50914] font-bold">{voucherCode}</span>
+                    </div>
 
-                  <div className="mt-3 text-center text-[10px] text-neutral-600 leading-tight">
-                    Apresente este QR Code no totem de credenciamento às 14:20 para retirar seu crachá oficial.
+                    <div className="pt-1 space-y-1.5 text-[11px]">
+                      <div>
+                        <span className="text-neutral-500 font-sans block text-[10px]">Nome Completo</span>
+                        <strong className="text-neutral-900 uppercase font-bold text-xs block leading-tight">{buyer?.fullName || fullName}</strong>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 pt-1 border-t border-neutral-200">
+                        <div>
+                          <span className="text-neutral-500 font-sans block text-[10px]">CPF</span>
+                          <span className="text-neutral-900 font-bold">{buyer?.cpf || cpf}</span>
+                        </div>
+                        <div>
+                          <span className="text-neutral-500 font-sans block text-[10px]">WhatsApp</span>
+                          <span className="text-neutral-900 font-bold">{buyer?.phone || phone}</span>
+                        </div>
+                      </div>
+                      <div className="pt-1 border-t border-neutral-200">
+                        <span className="text-neutral-500 font-sans block text-[10px]">E-mail</span>
+                        <span className="text-neutral-800 truncate block">{buyer?.email || email}</span>
+                      </div>
+                      {Boolean(buyer?.companyRole || companyRole) && (
+                        <div className="pt-1 border-t border-neutral-200">
+                          <span className="text-neutral-500 font-sans block text-[10px]">Cargo / Especialidade</span>
+                          <span className="text-neutral-900 font-semibold">{buyer?.companyRole || companyRole}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
