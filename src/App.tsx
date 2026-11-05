@@ -20,23 +20,80 @@ import { VoucherModal } from './components/VoucherModal';
 
 const OFFICIAL_BANNER_URL = 'https://i.postimg.cc/LsN91H0k/BANNER-SITE-WOHRSHOP-DRAGON.png';
 
-export default function App() {
-  const [mode, setMode] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('mode');
-    }
-    return null;
-  });
+function detectCurrentMode(): string | null {
+  if (typeof window === 'undefined') return null;
 
-  // Keep state in sync with URL navigation
+  const path = window.location.pathname.toLowerCase();
+  const hash = window.location.hash.toLowerCase();
+  const params = new URLSearchParams(window.location.search);
+
+  // Return mode from Mercado Pago (path, hash, query, or MP callback params)
+  if (
+    path.includes('/retorno') ||
+    path.includes('/sucesso') ||
+    path.includes('/obrigado') ||
+    path.includes('/confirmacao') ||
+    hash.includes('retorno') ||
+    hash.includes('sucesso') ||
+    params.get('mode') === 'retorno-pagamento' ||
+    params.get('mode') === 'retorno' ||
+    params.get('mode') === 'sucesso' ||
+    params.has('payment_id') ||
+    params.has('collection_id') ||
+    params.has('preference_id') ||
+    (params.has('status') && (params.get('status') === 'approved' || params.get('status') === 'pending'))
+  ) {
+    return 'retorno-pagamento';
+  }
+
+  // Sales Dashboard
+  if (
+    path.includes('/dashboard') ||
+    path.includes('/painel') ||
+    hash.includes('dashboard') ||
+    hash.includes('painel') ||
+    params.get('mode') === 'dashboard'
+  ) {
+    return 'dashboard';
+  }
+
+  // Upload photo
+  if (
+    path.includes('/upload') ||
+    hash.includes('upload') ||
+    params.get('mode') === 'upload'
+  ) {
+    return 'upload';
+  }
+
+  // Gallery Mural
+  if (
+    path.includes('/mural') ||
+    path.includes('/galeria') ||
+    hash.includes('mural') ||
+    hash.includes('galeria') ||
+    params.get('mode') === 'mural'
+  ) {
+    return 'mural';
+  }
+
+  return params.get('mode');
+}
+
+export default function App() {
+  const [mode, setMode] = useState<string | null>(detectCurrentMode);
+
+  // Keep state in sync with URL navigation & hash changes
   useEffect(() => {
-    const handlePopState = () => {
-      const params = new URLSearchParams(window.location.search);
-      setMode(params.get('mode'));
+    const syncMode = () => {
+      setMode(detectCurrentMode());
     };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener('popstate', syncMode);
+    window.addEventListener('hashchange', syncMode);
+    return () => {
+      window.removeEventListener('popstate', syncMode);
+      window.removeEventListener('hashchange', syncMode);
+    };
   }, []);
 
   const navigateTo = (newMode: string | null) => {
@@ -44,8 +101,12 @@ export default function App() {
     const url = new URL(window.location.href);
     if (newMode) {
       url.searchParams.set('mode', newMode);
+      url.pathname = '/';
+      url.hash = '';
     } else {
       url.searchParams.delete('mode');
+      url.pathname = '/';
+      url.hash = '';
     }
     window.history.pushState({}, '', url.toString());
   };
@@ -53,13 +114,7 @@ export default function App() {
   const isUploadMode = mode === 'upload';
   const isMuralMode = mode === 'mural';
   const isDashboardMode = mode === 'dashboard';
-  const isReturnMode =
-    mode === 'retorno-pagamento' ||
-    mode === 'retorno' ||
-    mode === 'sucesso' ||
-    (typeof window !== 'undefined' &&
-      (new URLSearchParams(window.location.search).has('payment_id') ||
-       new URLSearchParams(window.location.search).has('collection_id')));
+  const isReturnMode = mode === 'retorno-pagamento';
 
   // Landing page state
   const [currentBanner] = useState<string>(OFFICIAL_BANNER_URL);
