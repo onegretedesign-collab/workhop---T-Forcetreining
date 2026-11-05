@@ -50,13 +50,35 @@ import {
   Calendar,
   AlertCircle,
   ArrowUpDown,
+  Lock,
+  KeyRound,
+  Eye,
+  EyeOff,
+  LogOut,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface SalesDashboardProps {
   onBackToSite: () => void;
 }
 
+const ADMIN_AUTH_KEY = 'performance360_admin_authenticated';
+
 export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // Login form state
+  const [loginUser, setLoginUser] = useState('');
+  const [loginPass, setLoginPass] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
   const [sales, setSales] = useState<SaleRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +103,8 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
 
   // Real-time Firestore sync
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     setIsLoading(true);
     const q = query(collection(db, 'sales'));
 
@@ -133,7 +157,36 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [isAuthenticated]);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanUser = loginUser.trim().toLowerCase();
+    const cleanPass = loginPass;
+
+    if (cleanUser === 'admin' && cleanPass === 'Boss2812') {
+      try {
+        sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+      } catch {
+        // ignore
+      }
+      setIsAuthenticated(true);
+      setLoginError(null);
+    } else {
+      setLoginError('Login ou senha incorretos. Verifique suas credenciais.');
+    }
+  };
+
+  const handleLogout = () => {
+    try {
+      sessionStorage.removeItem(ADMIN_AUTH_KEY);
+    } catch {
+      // ignore
+    }
+    setIsAuthenticated(false);
+    setLoginPass('');
+    setLoginError(null);
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -226,6 +279,124 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
       });
   }, [sales, statusFilter, paymentFilter, searchTerm, sortBy]);
 
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#070707] text-neutral-100 flex flex-col justify-between font-sans selection:bg-[#E50914] selection:text-white">
+        {/* Top Header */}
+        <header className="border-b border-neutral-800/80 bg-[#0C0C0C]/90 backdrop-blur-md px-4 sm:px-8 py-4">
+          <div className="max-w-5xl mx-auto flex items-center justify-between">
+            <button
+              type="button"
+              onClick={onBackToSite}
+              className="inline-flex items-center gap-2 text-xs sm:text-sm text-neutral-400 hover:text-white transition cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4 text-[#E50914]" />
+              <span>Voltar ao site oficial</span>
+            </button>
+
+            <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full">
+              <Lock className="w-3.5 h-3.5 text-[#E50914]" />
+              <span>Acesso Restrito</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Login Card */}
+        <main className="flex-1 max-w-md w-full mx-auto p-4 sm:p-6 flex flex-col justify-center animate-in fade-in zoom-in-95 duration-300">
+          <div className="bg-[#111111] border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            {/* Subtle top glow */}
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#E50914]/15 rounded-full blur-[80px] pointer-events-none" />
+
+            <div className="text-center mb-6 relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-[#E50914]/15 border border-[#E50914]/30 text-[#E50914] flex items-center justify-center mx-auto mb-3 shadow-lg">
+                <Lock className="w-7 h-7" />
+              </div>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#E50914] font-bold block mb-1">
+                Área de Controle e Gestão
+              </span>
+              <h2 className="text-2xl font-extrabold text-white font-display">
+                Painel de Vendas
+              </h2>
+              <p className="text-xs text-neutral-400 mt-1">
+                Insira as credenciais de administrador para acessar os dados financeiros e lista de participantes.
+              </p>
+            </div>
+
+            {loginError && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                <span>{loginError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-4 relative z-10">
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">
+                  Login / Usuário
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={loginUser}
+                    onChange={(e) => {
+                      setLoginUser(e.target.value);
+                      if (loginError) setLoginError(null);
+                    }}
+                    placeholder="Ex: Admin"
+                    autoFocus
+                    required
+                    className="w-full pl-9 pr-3 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-[#E50914] transition font-sans"
+                  />
+                  <Users className="w-4 h-4 text-neutral-500 absolute left-3 top-3" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">
+                  Senha
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={loginPass}
+                    onChange={(e) => {
+                      setLoginPass(e.target.value);
+                      if (loginError) setLoginError(null);
+                    }}
+                    placeholder="Digite sua senha"
+                    required
+                    className="w-full pl-9 pr-10 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-[#E50914] transition font-sans"
+                  />
+                  <KeyRound className="w-4 h-4 text-neutral-500 absolute left-3 top-3" />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-2.5 text-neutral-500 hover:text-neutral-300 transition"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full mt-2 py-3 px-4 rounded-xl font-bold text-sm text-white bg-[#E50914] hover:bg-[#b80710] transition-all shadow-xl shadow-[#E50914]/25 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Entrar no Painel</span>
+              </button>
+            </form>
+          </div>
+        </main>
+
+        <footer className="border-t border-neutral-800/80 bg-[#0A0A0A] p-4 text-center text-xs text-neutral-600">
+          Performance 360º · Acesso Restrito aos Administradores
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-neutral-100 flex flex-col font-sans">
       {/* Toast Notification */}
@@ -308,6 +479,16 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
             >
               <Plus className="w-4 h-4" />
               <span>Nova Venda Manual</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-rose-400 text-xs font-semibold transition border border-neutral-800 hover:border-rose-900/40 cursor-pointer"
+              title="Encerrar sessão de administrador"
+            >
+              <LogOut className="w-3.5 h-3.5 text-rose-500" />
+              <span>Sair</span>
             </button>
           </div>
         </div>

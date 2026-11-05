@@ -61,16 +61,16 @@ export const Header: React.FC<HeaderProps> = ({
         </nav>
 
         {/* Zone 3: Primary actions & Compact Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {onGoToReturn && (
             <button
               type="button"
               onClick={onGoToReturn}
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-400 hover:text-emerald-300 text-[11px] sm:text-xs font-bold transition-colors cursor-pointer"
+              className="hidden lg:inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-400 hover:text-emerald-300 text-[11px] sm:text-xs font-bold transition-colors cursor-pointer"
               title="Já pagou? Envie seu comprovante para liberar o crachá"
             >
               <Paperclip className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="hidden xs:inline">Enviar Comprovante</span>
+              <span>Enviar Comprovante</span>
             </button>
           )}
 
@@ -78,36 +78,19 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onOpenDashboard}
-              className="p-2 sm:p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 text-neutral-300 hover:text-white transition-colors cursor-pointer shrink-0 flex items-center justify-center"
+              className="px-2.5 sm:px-3.5 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 text-xs font-bold text-neutral-200 hover:text-white transition-colors cursor-pointer shrink-0 whitespace-nowrap shadow-sm"
               title="Painel de Vendas"
-              aria-label="Painel de Vendas"
             >
-              <BarChart3 className="w-4 h-4 text-[#E50914]" />
+              <span>Painel de Vendas</span>
             </button>
           )}
-
-          <a
-            href="#galeria"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 text-xs font-semibold text-neutral-200 hover:text-white transition-colors cursor-pointer"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Galeria</span>
-          </a>
-
-          <a
-            href="#ingressos"
-            className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs md:text-sm font-bold text-white bg-[#E50914] hover:bg-[#b80710] rounded-lg transition-all shadow-md shadow-[#E50914]/25 whitespace-nowrap shrink-0 cursor-pointer"
-          >
-            <Ticket className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span>Garanta já sua vaga</span>
-          </a>
 
           {/* Mobile hamburger toggle */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Abrir menu"
-            className="md:hidden p-1.5 sm:p-2 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 shrink-0"
+            className="md:hidden p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 shrink-0"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
