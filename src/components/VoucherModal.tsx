@@ -230,101 +230,29 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               </div>
             </div>
 
-            {/* Badge Photo & Buyer Information Section (Replacing QR Code) */}
+            {/* Participant Identification & Voucher Details (No QR Code) */}
             <div className="p-5 rounded-2xl bg-white text-black flex flex-col sm:flex-row items-center justify-between gap-5 print-page-break border border-neutral-300">
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="user"
-                className="hidden"
-                onChange={handlePhotoSelect}
-              />
-              <input
-                ref={galleryInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handlePhotoSelect}
-              />
-
-              <div className="flex items-center gap-4 w-full sm:w-auto">
-                {/* Photo Frame in place of QR Code */}
-                <div className="relative w-24 h-32 sm:w-28 sm:h-36 bg-neutral-100 border-2 border-neutral-300 rounded-xl overflow-hidden shrink-0 flex items-center justify-center shadow-inner group">
-                  {badgePhoto ? (
-                    <>
-                      <img
-                        src={badgePhoto}
-                        alt="Foto do Crachá"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 print:hidden">
-                        <button
-                          type="button"
-                          onClick={() => cameraInputRef.current?.click()}
-                          className="p-1.5 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition"
-                          title="Tirar foto"
-                        >
-                          <Camera className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => galleryInputRef.current?.click()}
-                          className="p-1.5 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition"
-                          title="Galeria"
-                        >
-                          <ImageIcon className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center p-2 text-center">
-                      <Camera className="w-6 h-6 text-neutral-400 mb-1" />
-                      <span className="text-[10px] font-bold text-neutral-700 leading-tight">
-                        Foto Crachá
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 font-bold block">
-                    FOTO DO CRACHÁ OFICIAL
-                  </span>
-                  <h4 className="text-base font-extrabold font-display">
-                    {voucher.badgeName}
-                  </h4>
-                  <p className="text-xs text-neutral-600 max-w-xs mt-0.5">
-                    {voucher.companyRole || 'Participante VIP'} · CPF: {voucher.cpf}
-                  </p>
-
-                  <div className="print:hidden flex items-center gap-2 mt-2">
-                    <button
-                      type="button"
-                      onClick={() => cameraInputRef.current?.click()}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#E50914] hover:bg-[#b80710] text-white text-[11px] font-bold transition shadow-sm cursor-pointer"
-                    >
-                      <Camera className="w-3 h-3" />
-                      <span>Tirar Foto</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => galleryInputRef.current?.click()}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white text-[11px] font-bold transition shadow-sm cursor-pointer"
-                    >
-                      <ImageIcon className="w-3 h-3" />
-                      <span>Galeria</span>
-                    </button>
-                  </div>
-                </div>
+              <div className="flex-1">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-1">
+                  IDENTIFICAÇÃO DO PARTICIPANTE
+                </span>
+                <h4 className="text-xl font-extrabold font-display text-neutral-900">
+                  {voucher.badgeName}
+                </h4>
+                <p className="text-xs text-neutral-600 mt-0.5">
+                  {voucher.companyRole || 'Participante VIP'} · CPF: {voucher.cpf}
+                </p>
+                <p className="text-[11px] text-neutral-500 mt-2">
+                  Apresente seu documento oficial com foto na recepção da Academia Dragon às 14:20 para retirar seu crachá oficial.
+                </p>
               </div>
 
-              <div className="w-full sm:w-auto text-left sm:text-right font-mono text-xs text-neutral-600 sm:border-l sm:border-neutral-200 sm:pl-6 space-y-1">
+              <div className="w-full sm:w-auto text-left sm:text-right font-mono text-xs text-neutral-600 sm:border-l sm:border-neutral-200 sm:pl-6 space-y-1 shrink-0">
                 <div>Emitido em: {voucher.purchaseDate}</div>
-                <div className="font-bold text-black text-sm">
-                  ID: {voucher.voucherId}
+                <div className="font-bold text-[#E50914] text-base sm:text-lg">
+                  {voucher.voucherId}
                 </div>
-                <div className="text-[10px] text-emerald-600 font-semibold flex items-center sm:justify-end gap-1">
+                <div className="text-[10px] text-emerald-600 font-bold flex items-center sm:justify-end gap-1">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>IDENTIFICAÇÃO CADASTRADA</span>
                 </div>

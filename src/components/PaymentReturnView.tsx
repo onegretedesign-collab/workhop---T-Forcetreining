@@ -745,102 +745,30 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                   </div>
                 </div>
 
-                {/* Right: Badge Photo & Personal Information */}
+                {/* Right: Buyer Identification & Voucher Details (No QR Code) */}
                 <div className="md:w-72 flex flex-col items-center justify-between p-5 rounded-2xl bg-white text-black shadow-xl border border-neutral-300 print:border-black shrink-0">
                   <div className="w-full text-center">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-2">
-                      Foto do Crachá Nominal
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-1">
+                      Identificação Oficial
+                    </span>
+                    <div className="font-mono text-xl sm:text-2xl font-extrabold text-[#E50914] tracking-wider mb-1.5">
+                      {voucherCode}
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full mb-3">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Vaga Confirmada</span>
                     </span>
 
-                    {/* Photo Container in place of the QR Code */}
-                    <div className="relative w-36 h-48 sm:w-40 sm:h-52 mx-auto bg-neutral-100 border-2 border-neutral-300 rounded-2xl overflow-hidden shadow-inner flex flex-col items-center justify-center group mb-3">
-                      {isProcessingPhoto ? (
-                        <div className="flex flex-col items-center justify-center p-4 text-center">
-                          <Loader2 className="w-6 h-6 animate-spin text-[#E50914] mb-2" />
-                          <span className="text-[11px] font-bold text-neutral-700">Processando foto...</span>
-                        </div>
-                      ) : badgePhoto ? (
-                        <>
-                          <img
-                            src={badgePhoto}
-                            alt="Foto do Crachá"
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 print:hidden">
-                            <button
-                              type="button"
-                              onClick={() => cameraInputRef.current?.click()}
-                              className="p-2 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition cursor-pointer"
-                              title="Tirar outra foto"
-                            >
-                              <Camera className="w-4 h-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => galleryInputRef.current?.click()}
-                              className="p-2 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition cursor-pointer"
-                              title="Escolher da galeria"
-                            >
-                              <ImageIcon className="w-4 h-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={handleRemovePhoto}
-                              className="p-2 rounded-full bg-black/80 text-white hover:bg-red-600 transition cursor-pointer"
-                              title="Remover foto"
-                            >
-                              <Trash2 className="w-4 h-4 text-red-400 hover:text-white" />
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center p-3 text-center">
-                          <div className="w-14 h-14 rounded-full bg-neutral-200 text-neutral-500 flex items-center justify-center mb-2 shadow-inner">
-                            <Camera className="w-7 h-7" />
-                          </div>
-                          <span className="text-xs font-bold text-neutral-800 leading-tight">
-                            Foto para o Crachá
-                          </span>
-                          <span className="text-[10px] text-neutral-500 mt-1 max-w-[120px]">
-                            Tire uma foto ou escolha da galeria
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Action Buttons: Tirar Foto & Escolher da Galeria */}
-                    <div className="print:hidden w-full flex items-center justify-center gap-2 mb-3">
-                      <button
-                        type="button"
-                        onClick={() => cameraInputRef.current?.click()}
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl bg-[#E50914] hover:bg-[#b80710] text-white text-[11px] font-bold transition shadow-md shadow-[#E50914]/20 cursor-pointer"
-                      >
-                        <Camera className="w-3.5 h-3.5" />
-                        <span>Tirar Foto</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => galleryInputRef.current?.click()}
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-[11px] font-bold transition shadow-sm cursor-pointer"
-                      >
-                        <ImageIcon className="w-3.5 h-3.5" />
-                        <span>Galeria</span>
-                      </button>
-                    </div>
-
-                    {badgePhoto && (
-                      <div className="print:hidden text-[11px] text-emerald-600 font-bold mb-2 flex items-center justify-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Foto anexada com sucesso!</span>
-                      </div>
-                    )}
+                    <p className="text-[11px] text-neutral-600 leading-snug mb-3 text-center">
+                      Apresente seu documento de identidade com foto na recepção da Academia Dragon às 14:20 para a entrega do seu crachá físico oficial.
+                    </p>
                   </div>
 
                   {/* Personal Information of the Buyer */}
                   <div className="w-full bg-neutral-50 rounded-xl p-3.5 border border-neutral-200 text-left space-y-1.5 text-xs font-mono">
                     <div className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider pb-1.5 border-b border-neutral-200 flex items-center justify-between">
-                      <span>Dados do Comprador</span>
-                      <span className="text-[#E50914] font-bold">{voucherCode}</span>
+                      <span>Dados do Titular</span>
+                      <span className="text-emerald-600 font-bold">PAGO</span>
                     </div>
 
                     <div className="pt-1 space-y-1.5 text-[11px]">

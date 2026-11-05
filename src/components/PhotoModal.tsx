@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../firebase';
 import {
   X,
   ChevronLeft,
@@ -13,7 +15,9 @@ import {
   Clock,
   Check,
   Camera,
-  Flame
+  Flame,
+  Trash2,
+  Loader2,
 } from 'lucide-react';
 import { GalleryPhoto } from './GallerySection';
 
@@ -40,6 +44,8 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
   const [hasLiked, setHasLiked] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const currentIndex = photos.findIndex((p) => p.id === photo.id);
   const totalPhotos = photos.length;
@@ -135,6 +141,20 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
     return 'Hoje';
   };
 
+  const handleDeletePhoto = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteDoc(doc(db, 'photos', photo.id));
+      setShowConfirmDelete(false);
+      onClose();
+    } catch (err) {
+      console.error('Erro ao excluir foto do mural:', err);
+      alert('Não foi possível excluir a imagem. Tente novamente.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in zoom-in-95 duration-200 select-none overflow-hidden"
@@ -191,6 +211,16 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
             <span className="hidden sm:inline-flex px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 text-[11px] font-mono font-bold text-neutral-300">
               {currentIndex + 1} / {totalPhotos}
             </span>
+
+            {/* Delete button */}
+            <button
+              type="button"
+              onClick={() => setShowConfirmDelete(true)}
+              title="Excluir imagem do mural"
+              className="p-2 sm:p-2.5 rounded-xl bg-neutral-900 hover:bg-rose-950 text-neutral-400 hover:text-rose-400 border border-neutral-800 hover:border-rose-700/60 transition-colors cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
 
             {/* Download button */}
             <button
@@ -319,6 +349,57 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Delete Confirmation Dialog */}
+        {showConfirmDelete && (
+          <div
+            className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150"
+            onClick={() => setShowConfirmDelete(false)}
+          >
+            <div
+              className="bg-[#141414] border border-neutral-800 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl relative animate-in zoom-in-95 duration-150"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto mb-3">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white mb-1.5">
+                Excluir imagem do mural?
+              </h3>
+              <p className="text-xs text-neutral-400 mb-5 leading-relaxed">
+                Esta foto será removida permanentemente do mural de fotos oficial.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmDelete(false)}
+                  disabled={isDeleting}
+                  className="px-4 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-neutral-300 text-xs font-semibold border border-neutral-700 transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeletePhoto}
+                  disabled={isDeleting}
+                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition shadow-lg shadow-red-600/30 cursor-pointer disabled:opacity-60 flex items-center gap-1.5"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Excluindo...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Sim, Excluir</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

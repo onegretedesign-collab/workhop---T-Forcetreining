@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { QRCodeSVG } from 'qrcode.react';
 import { PhotoModal } from './PhotoModal';
@@ -14,7 +14,9 @@ import {
   ZoomIn,
   RefreshCw,
   Users,
-  Dumbbell
+  Dumbbell,
+  Trash2,
+  Loader2,
 } from 'lucide-react';
 
 export interface GalleryPhoto {
@@ -38,6 +40,8 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenUpload }) 
   const [loading, setLoading] = useState(true);
   const [showQrModal, setShowQrModal] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
+  const [photoToDelete, setPhotoToDelete] = useState<GalleryPhoto | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
 
   // Live upload URL for QR Code
@@ -100,6 +104,23 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenUpload }) 
     navigator.clipboard.writeText(uploadUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!photoToDelete) return;
+    try {
+      setIsDeleting(true);
+      await deleteDoc(doc(db, 'photos', photoToDelete.id));
+      if (selectedPhoto?.id === photoToDelete.id) {
+        setSelectedPhoto(null);
+      }
+      setPhotoToDelete(null);
+    } catch (err) {
+      console.error('Erro ao excluir foto do mural:', err);
+      alert('Não foi possível excluir a imagem. Tente novamente.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const formatPhotoDate = (createdAt?: GalleryPhoto['createdAt']) => {
@@ -243,6 +264,19 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenUpload }) 
                       <span>VIP</span>
                     </span>
                   </div>
+
+                  {/* Delete Button on Card */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPhotoToDelete(photo);
+                    }}
+                    className="absolute top-2 right-2 z-20 p-1.5 rounded-xl bg-black/80 hover:bg-rose-600 text-neutral-300 hover:text-white border border-neutral-700 hover:border-rose-500 backdrop-blur-md opacity-80 sm:opacity-0 group-hover:opacity-100 transition-all shadow-md cursor-pointer"
+                    title="Excluir imagem do mural"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
 
                   {/* Hover Overlay with Zoom Icon */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">

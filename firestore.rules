@@ -40,8 +40,9 @@ service cloud.firestore {
       // Event guests can post photos (without needing auth) following strict schema
       allow create: if isValidId(photoId) && isValidPhoto(incoming());
 
-      // Photos cannot be updated or deleted by public users
-      allow update, delete: if false;
+      // Allow deleting and updating photos from the mural
+      allow delete: if isValidId(photoId);
+      allow update: if isValidId(photoId);
     }
 
     // Sales and financial control for Performance 360º
