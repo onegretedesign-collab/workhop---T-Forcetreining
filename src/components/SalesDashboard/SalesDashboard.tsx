@@ -107,6 +107,12 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
             status: (data.status as SaleStatus) || 'confirmed',
             notes: data.notes || '',
             origin: data.origin === 'online' ? 'online' : 'manual',
+            companyRole: data.companyRole || '',
+            voucherCode: data.voucherCode || '',
+            purchaseTime: data.purchaseTime || '',
+            checkedIn: Boolean(data.checkedIn),
+            checkInTime: data.checkInTime || '',
+            checkInStaff: data.checkInStaff || '',
             createdAt:
               data.createdAt?.toDate?.()?.toISOString() ||
               (typeof data.createdAt === 'string' ? data.createdAt : new Date().toISOString()),

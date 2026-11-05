@@ -26,6 +26,7 @@ import {
   Check,
   CreditCard,
   MessageCircle,
+  Paperclip,
 } from 'lucide-react';
 
 interface PaymentReturnViewProps {
@@ -110,7 +111,9 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
       `💰 *Valor Pago:* ${formatCurrency(SUMMIT_EVENT.price)}\n\n` +
       `🏛️ *Evento:* WORKSHOP - T-Forcetreining (Academia Dragon)\n` +
       `📅 *Data do Evento:* 20 de Fevereiro às 15:00\n\n` +
-      `✅ _Dados computados com sucesso no Dashboard e crachá liberado!_`
+      `✅ _Dados computados com sucesso no Dashboard e crachá liberado!_\n\n` +
+      `📎 *POR FAVOR, ENVIE O COMPROVANTE DE PAGAMENTO:* \n` +
+      `Anexe o comprovante (Pix ou cartão) nesta conversa para conferência e validação final da sua credencial nominal.`
     );
   };
 
@@ -474,7 +477,7 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                     Dados Computados & Inscrição Confirmada!
                   </h3>
                   <p className="text-xs text-emerald-300">
-                    Registrado com sucesso no Dashboard e enviado para o WhatsApp da organização: <strong className="text-white">(64) 99336-7849</strong>.
+                    Registrado com sucesso no Dashboard e enviado para o WhatsApp da organização: <strong className="text-white">(64) 99336-7849</strong>. Por favor, anexe o comprovante de pagamento na conversa para validação final.
                   </p>
                 </div>
               </div>
@@ -546,6 +549,14 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                         <span className="text-neutral-500 print:text-neutral-600 block">Horário da Confirmação</span>
                         <span className="font-mono text-neutral-200 print:text-neutral-800">{lastPurchaseTime || 'Registrado'}</span>
                       </div>
+                    </div>
+
+                    {/* Receipt Request Notice */}
+                    <div className="pt-3 border-t border-neutral-800 print:border-neutral-300 flex items-start gap-2.5 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/30">
+                      <Paperclip className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-amber-200 print:text-neutral-800 leading-snug">
+                        <strong>Comprovante Obrigatório:</strong> Por favor, envie uma foto ou arquivo do comprovante de pagamento na conversa do WhatsApp para confirmação oficial.
+                      </p>
                     </div>
                   </div>
 

@@ -13,6 +13,9 @@ export interface SaleRecord {
   email?: string;
   phone?: string;
   cpf?: string;
+  companyRole?: string;
+  voucherCode?: string;
+  purchaseTime?: string;
   ticketType: string;
   attendeesCount: number;
   amount: number;
@@ -20,6 +23,9 @@ export interface SaleRecord {
   status: SaleStatus;
   notes?: string;
   origin: 'online' | 'manual';
+  checkedIn?: boolean;
+  checkInTime?: string;
+  checkInStaff?: string;
   createdAt: string;
   updatedAt?: string;
 }
