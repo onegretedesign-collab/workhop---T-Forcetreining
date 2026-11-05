@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { SUMMIT_EVENT } from '../data/summitData';
-import { Ticket, Menu, X, BarChart3 } from 'lucide-react';
+import { Ticket, Menu, X, BarChart3, Paperclip } from 'lucide-react';
 
 interface HeaderProps {
   onOpenCheckout: () => void;
   onOpenMural?: () => void;
   onOpenDashboard?: () => void;
+  onGoToReturn?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenCheckout,
   onOpenMural,
   onOpenDashboard,
+  onGoToReturn,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -60,6 +62,18 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Primary actions & Compact Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {onGoToReturn && (
+            <button
+              type="button"
+              onClick={onGoToReturn}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-400 hover:text-emerald-300 text-[11px] sm:text-xs font-bold transition-colors cursor-pointer"
+              title="Já pagou? Envie seu comprovante para liberar o crachá"
+            >
+              <Paperclip className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="hidden xs:inline">Enviar Comprovante</span>
+            </button>
+          )}
+
           {onOpenDashboard && (
             <button
               type="button"
@@ -103,6 +117,19 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Mobile nav drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-neutral-800 bg-[#0E0E0E] px-4 pt-2 pb-4 space-y-2">
+          {onGoToReturn && (
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onGoToReturn();
+              }}
+              className="w-full text-left px-3 py-2 text-sm font-bold text-emerald-400 hover:bg-emerald-950/40 rounded-lg flex items-center gap-2 border border-emerald-500/40 bg-emerald-950/20"
+            >
+              <Paperclip className="w-4 h-4" />
+              <span>Já pagou? Enviar Comprovante & Crachá</span>
+            </button>
+          )}
           {onOpenDashboard && (
             <button
               type="button"

@@ -17,6 +17,7 @@ import {
   Edit3,
   Loader2,
   Lock,
+  Paperclip,
 } from 'lucide-react';
 
 export interface BuyerData {
@@ -28,9 +29,13 @@ export interface BuyerData {
   registeredAt?: string;
 }
 
+interface TicketCheckoutCardProps {
+  onGoToReturn?: () => void;
+}
+
 const STORAGE_KEY = 'performance360_buyer_data';
 
-export const TicketCheckoutCard: React.FC = () => {
+export const TicketCheckoutCard: React.FC<TicketCheckoutCardProps> = ({ onGoToReturn }) => {
   const [step, setStep] = useState<1 | 2>(1);
 
   // Form fields
@@ -366,7 +371,7 @@ export const TicketCheckoutCard: React.FC = () => {
             className="w-full py-4 px-6 rounded-xl font-bold text-base text-white bg-[#E50914] hover:bg-[#b80710] transition-all shadow-xl shadow-[#E50914]/30 flex items-center justify-center gap-2 cursor-pointer group hover:scale-[1.01]"
           >
             <Lock className="w-4 h-4" />
-            <span>Compre Aqui (Pagar no Mercado Pago)</span>
+            <span>1. Pagar no Mercado Pago (Link Oficial)</span>
             <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </a>
 
@@ -382,6 +387,28 @@ export const TicketCheckoutCard: React.FC = () => {
               <span>Cartão de Crédito em até 12x</span>
             </span>
           </div>
+
+          {/* Next Step 2: Já paguei! Enviar Comprovante */}
+          {onGoToReturn && (
+            <div className="mt-4 p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 space-y-2.5">
+              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Passo 2 · Já concluiu o pagamento?</span>
+              </div>
+              <p className="text-xs text-neutral-300 leading-relaxed">
+                Assim que efetuar o Pix ou Cartão no Mercado Pago, clique no botão abaixo para <strong>registrar sua vaga no Dashboard</strong>, <strong>enviar o comprovante no WhatsApp</strong> e <strong>receber seu crachá oficial nominal</strong>:
+              </p>
+              <button
+                type="button"
+                onClick={onGoToReturn}
+                className="w-full py-3.5 px-5 rounded-xl font-extrabold text-sm text-white bg-emerald-600 hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer group animate-pulse hover:animate-none"
+              >
+                <Paperclip className="w-4 h-4" />
+                <span>2. Já Paguei! Enviar Comprovante & Liberar Crachá</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

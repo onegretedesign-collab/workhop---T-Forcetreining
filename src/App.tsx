@@ -148,23 +148,34 @@ export default function App() {
     return <GalleryView onGoToSite={() => navigateTo(null)} />;
   }
 
+  const scrollToTickets = () => {
+    const el = document.getElementById('ingressos');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   // Default: Event Landing Page with integrated Gallery
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-neutral-100 selection:bg-[#E50914] selection:text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw]">
       {/* Top Header with live Gallery button and Dashboard button */}
       <Header
-        onOpenCheckout={() => setIsCheckoutOpen(true)}
+        onOpenCheckout={scrollToTickets}
         onOpenDashboard={() => navigateTo('dashboard')}
+        onGoToReturn={() => navigateTo('retorno-pagamento')}
       />
 
       <main className="flex-1">
         <Hero
           bannerUrl={currentBanner}
-          onOpenCheckout={() => setIsCheckoutOpen(true)}
+          onOpenCheckout={scrollToTickets}
         />
-        <SpeakersSection onOpenCheckout={() => setIsCheckoutOpen(true)} />
+        <SpeakersSection onOpenCheckout={scrollToTickets} />
         <LogisticsSection />
-        <TicketsSection onOpenCheckout={() => setIsCheckoutOpen(true)} />
+        <TicketsSection
+          onOpenCheckout={scrollToTickets}
+          onGoToReturn={() => navigateTo('retorno-pagamento')}
+        />
         <GallerySection onOpenUpload={() => navigateTo('upload')} />
       </main>
 

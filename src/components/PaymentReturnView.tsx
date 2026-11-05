@@ -16,6 +16,7 @@ import {
   Clock,
   Sparkles,
   ArrowLeft,
+  ArrowRight,
   ShieldCheck,
   User,
   Mail,
@@ -234,6 +235,12 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
     window.print();
   };
 
+  const handleResetToNewSubmission = () => {
+    sessionStorage.removeItem(RECORDED_SESSION_KEY);
+    sessionStorage.removeItem('performance360_purchase_time');
+    setIsSubmitted(false);
+  };
+
   const handleCopyReturnLink = () => {
     const returnUrl = `${window.location.origin}/?mode=retorno-pagamento`;
     navigator.clipboard.writeText(returnUrl);
@@ -275,9 +282,24 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
                 Pagamento Mercado Pago Concluído
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-display">
-                Confirme seus dados para emissão do Crachá
+                Enviar Comprovante & Liberar Crachá
               </h2>
+              <p className="text-xs text-neutral-400 mt-1 max-w-md mx-auto">
+                Confirme seus dados abaixo para registrar sua vaga no Dashboard e enviar o comprovante no WhatsApp oficial.
+              </p>
             </div>
+
+            {fullName && (
+              <div className="mb-5 p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="text-xs text-neutral-300 leading-relaxed">
+                  <span className="font-bold text-white block text-sm mb-0.5">
+                    Pré-cadastro localizado com sucesso!
+                  </span>
+                  Preenchemos seus dados automaticamente. Escolha o método usado e clique no botão verde para enviar o comprovante.
+                </div>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Nome Completo */}
@@ -444,23 +466,28 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-4 py-4 px-6 rounded-xl font-bold text-base text-white bg-[#E50914] hover:bg-[#b80710] transition-all shadow-xl shadow-[#E50914]/30 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full mt-4 py-4 px-6 rounded-xl font-extrabold text-base text-white bg-emerald-600 hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 group"
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Enviando dados...</span>
+                    <span>Registrando Compra & Gerando Crachá...</span>
                   </>
                 ) : (
                   <>
-                    <span>Enviar dados</span>
+                    <MessageCircle className="w-5 h-5" />
+                    <span>Enviar Comprovante no WhatsApp & Liberar Crachá</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </button>
 
-              <p className="text-[11px] text-neutral-500 text-center pt-1 font-mono">
-                Ao clicar em enviar dados, as informações são computadas no Dashboard e enviadas automaticamente para o WhatsApp (64 99336-7849).
-              </p>
+              <div className="mt-3 p-3 rounded-xl bg-neutral-900 border border-neutral-800 text-[11px] text-neutral-300 flex items-start gap-2.5 leading-relaxed">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  Ao clicar no botão verde, seus dados são <strong>registrados no Dashboard em tempo real</strong> e abriremos automaticamente a conversa do WhatsApp <strong>(64 99336-7849)</strong> para você anexar seu comprovante.
+                </span>
+              </div>
             </form>
           </div>
         ) : (
@@ -634,6 +661,14 @@ export const PaymentReturnView: React.FC<PaymentReturnViewProps> = ({ onBackToSi
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Enviar Confirmação para WhatsApp (64 99336-7849)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleResetToNewSubmission}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-300 hover:text-white font-semibold text-xs transition cursor-pointer"
+              >
+                <span>Novo Crachá / Outra Compra</span>
               </button>
 
               <button

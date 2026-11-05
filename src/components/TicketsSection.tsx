@@ -6,9 +6,10 @@ import { ShieldCheck, Ticket, Sparkles } from 'lucide-react';
 
 interface TicketsSectionProps {
   onOpenCheckout: () => void;
+  onGoToReturn?: () => void;
 }
 
-export const TicketsSection: React.FC<TicketsSectionProps> = ({ onOpenCheckout }) => {
+export const TicketsSection: React.FC<TicketsSectionProps> = ({ onOpenCheckout, onGoToReturn }) => {
   return (
     <section id="ingressos" className="py-20 sm:py-28 bg-[#0A0A0A] border-b border-neutral-900 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -74,7 +75,19 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onOpenCheckout }
               </p>
 
               {/* Interactive Buyer Registration & Checkout Flow */}
-              <TicketCheckoutCard />
+              <TicketCheckoutCard onGoToReturn={onGoToReturn} />
+
+              {onGoToReturn && (
+                <div className="mt-4 pt-3 border-t border-neutral-800/80 text-center">
+                  <button
+                    type="button"
+                    onClick={onGoToReturn}
+                    className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 underline underline-offset-4 cursor-pointer"
+                  >
+                    <span>Já concluiu o pagamento no Mercado Pago? Clique aqui para enviar o comprovante e emitir seu crachá</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Guarantees */}

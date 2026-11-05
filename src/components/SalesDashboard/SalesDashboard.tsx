@@ -183,112 +183,6 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
     }
   };
 
-  // Quick Seed Demo Data if empty so organizer immediately has a rich dashboard
-  const handleSeedDemoData = async () => {
-    try {
-      setIsLoading(true);
-      const demoSales: Omit<SaleRecord, 'id'>[] = [
-        {
-          customerName: 'Dra. Camila Vasconcelos',
-          email: 'camila.vasconcelos@clinica.com.br',
-          phone: '(11) 98765-4321',
-          cpf: '123.456.789-00',
-          ticketType: 'Passaporte Completo',
-          attendeesCount: 1,
-          amount: 200,
-          paymentMethod: 'pix',
-          status: 'confirmed',
-          notes: 'Pagamento instantâneo via PIX online',
-          origin: 'online',
-          createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-        },
-        {
-          customerName: 'Rodrigo Ferraz (Academia Dragon)',
-          email: 'rodrigo.personal@gmail.com',
-          phone: '(11) 97654-3210',
-          cpf: '234.567.890-11',
-          ticketType: 'VIP Premium Dragon',
-          attendeesCount: 2,
-          amount: 700,
-          paymentMethod: 'credit_card',
-          status: 'confirmed',
-          notes: '2 ingressos VIP pagos no balcão da academia Dragon',
-          origin: 'manual',
-          createdAt: new Date(Date.now() - 3600000 * 18).toISOString(),
-        },
-        {
-          customerName: 'Lucas Albuquerque Nutrition',
-          email: 'lucas.nutri@hotmail.com',
-          phone: '(11) 99887-6655',
-          cpf: '345.678.901-22',
-          ticketType: 'Passaporte Completo',
-          attendeesCount: 1,
-          amount: 200,
-          paymentMethod: 'pix',
-          status: 'confirmed',
-          notes: 'Inscrição confirmada',
-          origin: 'online',
-          createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-        },
-        {
-          customerName: 'Marcos Vinicius Santos',
-          email: 'mvinicius@gmail.com',
-          phone: '(11) 96543-2109',
-          cpf: '456.789.012-33',
-          ticketType: 'Passaporte Completo',
-          attendeesCount: 1,
-          amount: 200,
-          paymentMethod: 'cash',
-          status: 'confirmed',
-          notes: 'Pago em dinheiro vivo na recepção da academia Dragon',
-          origin: 'manual',
-          createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-        },
-        {
-          customerName: 'Prof. Anderson Silva (Patrocinador Max)',
-          email: 'anderson.max@suplementos.com',
-          phone: '(11) 95432-1098',
-          cpf: '567.890.123-44',
-          ticketType: 'Cortesia / Patrocinador',
-          attendeesCount: 3,
-          amount: 0,
-          paymentMethod: 'complimentary',
-          status: 'confirmed',
-          notes: 'Cortesias oficiais do estande de suplementação',
-          origin: 'manual',
-          createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
-        },
-        {
-          customerName: 'Beatriz Almeida Rocha',
-          email: 'beatriz.rocha@gmail.com',
-          phone: '(11) 94321-0987',
-          cpf: '678.901.234-55',
-          ticketType: 'Passaporte Completo',
-          attendeesCount: 1,
-          amount: 200,
-          paymentMethod: 'pix',
-          status: 'pending',
-          notes: 'Aguardando compensação do comprovante bancário',
-          origin: 'manual',
-          createdAt: new Date(Date.now() - 3600000 * 1).toISOString(),
-        },
-      ];
-
-      for (const item of demoSales) {
-        await addDoc(collection(db, 'sales'), {
-          ...item,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
-      }
-      showToast('Dados de demonstração gerados com sucesso!');
-    } catch (err) {
-      console.error('Error seeding sales:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Summary Metrics calculations
   const summary = useMemo(() => calculateSalesSummary(sales, 500), [sales]);
 
@@ -614,15 +508,6 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
               Exibindo <strong className="text-white">{filteredSales.length}</strong> de{' '}
               <strong className="text-white">{sales.length}</strong> vendas cadastradas
             </span>
-            {sales.length === 0 && !isLoading && (
-              <button
-                type="button"
-                onClick={handleSeedDemoData}
-                className="text-xs text-[#E50914] hover:underline font-semibold cursor-pointer"
-              >
-                + Carregar Dados de Exemplo para Teste
-              </button>
-            )}
           </div>
         </section>
 
@@ -644,7 +529,7 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
               <p className="text-xs text-neutral-400 max-w-md mx-auto mb-5">
                 {searchTerm || statusFilter !== 'all' || paymentFilter !== 'all'
                   ? 'Nenhuma venda corresponde aos filtros selecionados. Tente limpar os filtros de busca.'
-                  : 'Nenhuma venda foi registrada ainda no sistema de controle. Comece adicionando uma venda manual ou carregue os dados de demonstração.'}
+                  : 'Nenhuma venda foi registrada ainda no sistema de controle. Adicione uma venda manual ou aguarde novas compras.'}
               </p>
               <div className="flex items-center justify-center gap-2">
                 <button
@@ -657,15 +542,6 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({ onBackToSite }) 
                 >
                   + Cadastrar Venda Manual
                 </button>
-                {sales.length === 0 && (
-                  <button
-                    type="button"
-                    onClick={handleSeedDemoData}
-                    className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold rounded-xl transition cursor-pointer"
-                  >
-                    Carregar Vendas de Exemplo
-                  </button>
-                )}
               </div>
             </div>
           ) : (
