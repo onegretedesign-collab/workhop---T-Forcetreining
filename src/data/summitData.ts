@@ -38,7 +38,7 @@ export const SUMMIT_EVENT = {
   maxInstallments: 12,
   spotsLeft: 42,
   totalSpots: 500,
-  checkoutUrl: "https://mpago.la/2C8a4ME",
+  checkoutUrl: "https://mpago.li/2jW7NJq",
 };
 
 export const BANNER_PRESETS: BannerPreset[] = [

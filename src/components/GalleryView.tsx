@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { QRCodeSVG } from 'qrcode.react';
-import { QrCode, X, Image as ImageIcon, Maximize2, Minimize2, ExternalLink, Globe, Sparkles, Copy, Check } from 'lucide-react';
+import { QrCode, X, Image as ImageIcon, Maximize2, Minimize2, ExternalLink, Globe, Sparkles, Copy, Check, Trash2, Loader2 } from 'lucide-react';
 
 export interface PhotoItem {
   id: string;
@@ -21,6 +21,8 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onGoToSite }) => {
   const [showQrModal, setShowQrModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [photoToDelete, setPhotoToDelete] = useState<PhotoItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // URL that QR Code directs attendees to:
   const uploadUrl = typeof window !== 'undefined'
@@ -61,6 +63,20 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onGoToSite }) => {
     navigator.clipboard.writeText(uploadUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!photoToDelete) return;
+    try {
+      setIsDeleting(true);
+      await deleteDoc(doc(db, 'photos', photoToDelete.id));
+      setPhotoToDelete(null);
+    } catch (err) {
+      console.error('Erro ao excluir foto:', err);
+      alert('Não foi possível excluir a imagem. Tente novamente.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -153,6 +169,19 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onGoToSite }) => {
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                  {/* Delete button on card */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPhotoToDelete(item);
+                    }}
+                    className="absolute top-2 right-2 z-20 p-1.5 rounded-xl bg-black/80 hover:bg-rose-600 text-neutral-300 hover:text-white border border-neutral-700/80 hover:border-rose-500 backdrop-blur-md opacity-80 sm:opacity-0 group-hover:opacity-100 transition-all shadow-md cursor-pointer"
+                    title="Excluir imagem do mural"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
 
                 <div className="p-3 bg-[#121212] flex flex-col justify-between flex-1 border-t border-neutral-800/50">
@@ -234,6 +263,56 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onGoToSite }) => {
               <span>Abrir página de upload</span>
               <ExternalLink className="w-3 h-3" />
             </a>
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {photoToDelete && (
+        <div
+          className="fixed inset-0 bg-black/85 backdrop-blur-md z-60 flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => setPhotoToDelete(null)}
+        >
+          <div
+            className="bg-[#141414] border border-neutral-800 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl relative animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto mb-3">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-white mb-1.5">
+              Excluir imagem do mural?
+            </h3>
+            <p className="text-xs text-neutral-400 mb-5 leading-relaxed">
+              Esta foto será removida permanentemente do mural de fotos oficial.
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setPhotoToDelete(null)}
+                disabled={isDeleting}
+                className="px-4 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-neutral-300 text-xs font-semibold border border-neutral-700 transition cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleDeletePhoto}
+                disabled={isDeleting}
+                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition shadow-lg shadow-red-600/30 cursor-pointer disabled:opacity-60 flex items-center gap-1.5"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Excluindo...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Sim, Excluir</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

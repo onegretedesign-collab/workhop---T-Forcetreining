@@ -397,6 +397,57 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenUpload }) 
           </div>
         </div>
       )}
+
+      {/* Delete Photo Confirmation Modal */}
+      {photoToDelete && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => setPhotoToDelete(null)}
+        >
+          <div
+            className="bg-[#141414] border border-neutral-800 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl relative animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto mb-3">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-white mb-1.5">
+              Excluir imagem do mural?
+            </h3>
+            <p className="text-xs text-neutral-400 mb-5 leading-relaxed">
+              Esta foto será removida permanentemente do mural de fotos oficial.
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setPhotoToDelete(null)}
+                disabled={isDeleting}
+                className="px-4 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-neutral-300 text-xs font-semibold border border-neutral-700 transition cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleDeletePhoto}
+                disabled={isDeleting}
+                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition shadow-lg shadow-red-600/30 cursor-pointer disabled:opacity-60 flex items-center gap-1.5"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Excluindo...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Sim, Excluir</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
