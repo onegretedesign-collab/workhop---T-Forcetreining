@@ -240,7 +240,7 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
             <span className="text-[9.5px] font-mono uppercase tracking-wider text-[#E50914] font-bold block drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
               Tema da Sessão:
             </span>
-            <p className="text-[11px] sm:text-xs font-semibold text-white leading-snug line-clamp-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] mt-0.5">
+            <p className="text-[11px] sm:text-xs font-semibold text-white leading-snug line-clamp-2 sm:line-clamp-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] mt-0.5">
               "{speaker.talkTitle}"
             </p>
           </div>
