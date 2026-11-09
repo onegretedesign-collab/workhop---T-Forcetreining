@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Speaker, SUMMIT_EVENT } from '../data/summitData';
 import { SpeakerPosterCard } from './SpeakerPosterCard';
-import { ChevronLeft, ChevronRight, X, Calendar, Share2, Check, ArrowRight, Instagram } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, ArrowRight, Instagram } from 'lucide-react';
 
 interface SpeakerDetailModalProps {
   speaker: Speaker | null;
@@ -20,223 +20,175 @@ export const SpeakerDetailModal: React.FC<SpeakerDetailModalProps> = ({
   onClose,
   onNext,
   onPrev,
-  currentIndex,
-  totalSpeakers,
-  onOpenCheckout,
 }) => {
-  const [copied, setCopied] = useState(false);
-
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
       if (e.key === 'ArrowRight') onNext();
       if (e.key === 'ArrowLeft') onPrev();
       if (e.key === 'Escape') onClose();
     };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen, onNext, onPrev, onClose]);
 
   if (!isOpen || !speaker) return null;
 
-  const handleShare = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(
-        `Palestra de ${speaker.name} no WORKSHOP - T-Forcetreining: "${speaker.talkTitle}"`
-      );
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    }
-  };
-
-  const handleDownloadCalendar = () => {
-    const icsContent = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//WORKSHOP - T-FORCETREINING 2026//PT-BR
-BEGIN:VEVENT
-SUMMARY:${speaker.talkTitle} - ${speaker.name}
-DESCRIPTION:${speaker.talkDescription}
-LOCATION:Academia Dragon, Palco Principal - São Paulo
-STATUS:CONFIRMED
-END:VEVENT
-END:VCALENDAR`;
-
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${speaker.name.replace(/\s+/g, '_')}_WORKSHOP_T_FORCETREINING.ics`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 lg:p-8 bg-black/90 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 lg:p-12 bg-black/95 backdrop-blur-2xl overflow-y-auto animate-in fade-in duration-200"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="speaker-modal-title"
     >
-      {/* Modal Dialog Card */}
+      {/* Top-Right Circular Close Button (as in image_1d23f7cb.png) */}
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Fechar"
+        className="fixed top-5 right-5 sm:top-8 sm:right-8 z-50 w-11 h-11 rounded-full bg-white/10 hover:bg-[#E50914] text-white flex items-center justify-center transition-all cursor-pointer border border-white/10 hover:border-[#E50914] shadow-xl group"
+      >
+        <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+      </button>
+
+      {/* Center Layout: Card on Left + Information on Right */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-5xl bg-[#0D0D0D] border border-neutral-800 rounded-[2.2rem] shadow-2xl p-6 sm:p-10 lg:p-12 my-6 overflow-hidden"
+        className="relative max-w-6xl w-full mx-auto my-auto py-6 sm:py-10 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16"
       >
-        {/* Close Button top-right */}
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Fechar palestra"
-          className="absolute top-5 right-5 sm:top-7 sm:right-7 p-2 rounded-full text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors z-30"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* Left Column: Poster Card with Circular Navigation Arrows on the borders */}
+        <div className="relative flex items-center justify-center shrink-0 w-full max-w-[320px] sm:max-w-[360px]">
+          {/* Left Arrow Button (ChevronLeft) */}
+          <button
+            type="button"
+            onClick={onPrev}
+            aria-label="Palestrante anterior"
+            className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#E50914] hover:bg-[#b80710] text-white shadow-2xl flex items-center justify-center transition-all cursor-pointer hover:scale-110 active:scale-95 border border-white/20"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
 
-        {/* Counter indicator */}
-        <div className="absolute top-6 left-8 text-xs font-mono text-neutral-500 hidden sm:block">
-          PALESTRANTE {currentIndex + 1} DE {totalSpeakers}
-        </div>
-
-        {/* Main Split Grid (Matches Video layout) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mt-4 sm:mt-2">
-          {/* Left Column: Poster Card with floating Left and Right circular arrow buttons */}
-          <div className="lg:col-span-5 relative flex items-center justify-center">
-            {/* The Left Navigation Arrow on the edge of the card */}
-            <button
-              type="button"
-              onClick={onPrev}
-              aria-label="Palestrante anterior"
-              className="absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#181818] border border-neutral-700 hover:border-[#E50914] text-white hover:bg-[#E50914] shadow-2xl flex items-center justify-center transition-all cursor-pointer group"
-            >
-              <ChevronLeft className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" />
-            </button>
-
-            {/* Poster Card Container */}
-            <div className="w-full max-w-[340px] sm:max-w-[370px]">
-              <SpeakerPosterCard speaker={speaker} isModalView={true} />
-            </div>
-
-            {/* The Right Navigation Arrow on the edge of the card */}
-            <button
-              type="button"
-              onClick={onNext}
-              aria-label="Próximo palestrante"
-              className="absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#181818] border border-neutral-700 hover:border-[#E50914] text-white hover:bg-[#E50914] shadow-2xl flex items-center justify-center transition-all cursor-pointer group"
-            >
-              <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" />
-            </button>
+          {/* The Poster Card */}
+          <div className="w-full">
+            <SpeakerPosterCard speaker={speaker} isModalView={true} />
           </div>
 
-          {/* Right Column: Speaker Detail Content */}
-          <div className="lg:col-span-7 space-y-5 text-left">
-            {/* Category / Track label */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-widest text-[#E50914]">
-                {speaker.category}
-              </span>
-              <span aria-hidden="true" className="text-neutral-600">·</span>
-              <span className="text-xs font-mono text-neutral-400">
-                {speaker.time} · PALCO MASTER
-              </span>
-            </div>
+          {/* Right Arrow Button (ChevronRight) */}
+          <button
+            type="button"
+            onClick={onNext}
+            aria-label="Próximo palestrante"
+            className="absolute -right-4 sm:-right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#E50914] hover:bg-[#b80710] text-white shadow-2xl flex items-center justify-center transition-all cursor-pointer hover:scale-110 active:scale-95 border border-white/20"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </div>
 
-            {/* Speaker Name */}
-            <h2
-              id="speaker-modal-title"
-              className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight leading-tight"
-            >
-              {speaker.name}
-            </h2>
+        {/* Right Column: Speaker Detail Content (styled faithfully to image_1d23f7cb.png) */}
+        <div className="flex-1 max-w-xl text-left space-y-4">
+          {/* Category / Area in accent color (matches `SOCIAL MEDIA`) */}
+          <div className="text-xs sm:text-sm font-mono font-bold uppercase tracking-widest text-[#E50914] flex items-center gap-2">
+            <span>{speaker.category}</span>
+            <span className="text-neutral-600">·</span>
+            <span className="text-neutral-400">{speaker.time}</span>
+          </div>
 
-            {/* Instagram handle right below name */}
+          {/* Big Bold Speaker Name (matches `Criações que inspiram`) */}
+          <h2
+            id="speaker-modal-title"
+            className="text-3xl sm:text-5xl font-extrabold text-white font-display tracking-tight leading-tight"
+          >
+            {speaker.name}
+          </h2>
+
+          {/* Instagram & Área de Atuação */}
+          <div className="flex flex-wrap items-center gap-3 pt-1">
             {speaker.instagram && (
               <a
                 href={`https://instagram.com/${speaker.instagram.replace('@', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm sm:text-base font-bold font-mono text-[#E50914] hover:text-white transition-colors bg-[#E50914]/10 hover:bg-[#E50914] border border-[#E50914]/30 px-3.5 py-1.5 rounded-full w-max mt-1"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold font-mono text-[#E50914] hover:text-white transition-colors bg-[#E50914]/10 hover:bg-[#E50914] border border-[#E50914]/30 px-3.5 py-1.5 rounded-full"
                 title={`Ver perfil ${speaker.instagram} no Instagram`}
               >
-                <Instagram className="w-4 h-4" />
+                <Instagram className="w-3.5 h-3.5" />
                 <span>{speaker.instagram}</span>
               </a>
             )}
 
-            {/* Role & Company */}
-            <p className="text-sm font-semibold text-neutral-300 font-mono">
-              {speaker.role} · <span className="text-[#E50914]">{speaker.company}</span>
-            </p>
+            <span className="text-xs sm:text-sm font-mono text-neutral-200 font-semibold">
+              {speaker.role}
+            </span>
+          </div>
 
-            {/* Talk Title */}
-            <div className="p-4 rounded-xl bg-neutral-900/60 border border-neutral-800">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block mb-1">
-                TEMA DA SESSÃO
-              </span>
-              <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
-                "{speaker.talkTitle}"
-              </h3>
-            </div>
+          {/* Talk Theme */}
+          <div className="pt-2">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 font-bold block mb-1">
+              Tema da Sessão:
+            </span>
+            <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+              "{speaker.talkTitle}"
+            </h3>
+          </div>
 
-            {/* Detailed Description (Just like in the video) */}
-            <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed max-w-xl">
-              {speaker.talkDescription}
-            </p>
+          {/* Detailed Description (matches paragraph text in image_1d23f7cb.png) */}
+          <p className="text-sm sm:text-base text-neutral-300 leading-relaxed font-normal pt-1">
+            {speaker.talkDescription}
+          </p>
 
-            {/* Key Takeaways */}
-            <div className="space-y-1.5 pt-1">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#E50914] font-semibold block">
-                Destaques do Conteúdo
-              </span>
-              <ul className="space-y-1 text-xs text-neutral-400">
-                {speaker.keyTakeaways.slice(0, 2).map((item, idx) => (
+          {/* Key Takeaways */}
+          {speaker.keyTakeaways && speaker.keyTakeaways.length > 0 && (
+            <div className="pt-1">
+              <ul className="space-y-1.5 text-xs sm:text-sm text-neutral-400">
+                {speaker.keyTakeaways.map((takeaway, idx) => (
                   <li key={idx} className="flex items-start gap-2">
                     <span className="text-[#E50914] font-bold">›</span>
-                    <span>{item}</span>
+                    <span>{takeaway}</span>
                   </li>
                 ))}
               </ul>
             </div>
+          )}
 
-            {/* Action Buttons (Matches the video: FECHAR PALESTRA and VOLTAR) */}
-            <div className="pt-4 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-6 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-bold text-xs uppercase tracking-wider transition-all"
-              >
-                Fechar Palestra
-              </button>
+          {/* Bottom Action Buttons (matches `FECHAR PROJETO` and `VOLTAR` in image_1d23f7cb.png) */}
+          <div className="pt-5 flex flex-wrap items-center gap-3">
+            {/* Primary Filled Pill Button */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-8 py-3.5 rounded-full bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#E50914]/30 cursor-pointer"
+            >
+              Fechar Palestra
+            </button>
 
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-6 py-3 rounded-xl border border-[#E50914] text-[#E50914] hover:bg-[#E50914] hover:text-white font-bold text-xs uppercase tracking-wider transition-all"
-              >
-                Voltar
-              </button>
+            {/* Secondary Outlined Pill Button */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-8 py-3.5 rounded-full border border-neutral-600 hover:border-white text-neutral-200 hover:text-white font-bold text-xs uppercase tracking-wider transition-all bg-transparent cursor-pointer"
+            >
+              Voltar
+            </button>
 
-              <a
-                href={SUMMIT_EVENT.checkoutUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 rounded-xl bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#E50914]/20 inline-flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>Garanta já sua vaga</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </a>
-
-              <button
-                type="button"
-                onClick={handleDownloadCalendar}
-                title="Adicionar ao Calendário (.ics)"
-                className="p-3 rounded-xl bg-neutral-900 border border-neutral-700 hover:text-white text-neutral-400 transition-colors ml-auto hidden sm:flex"
-              >
-                <Calendar className="w-4 h-4 text-[#E50914]" />
-              </button>
-            </div>
+            {/* Quick Ticket Checkout Button */}
+            <a
+              href={SUMMIT_EVENT.checkoutUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-7 py-3.5 rounded-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 hover:border-[#E50914] text-white font-bold text-xs uppercase tracking-wider transition-all inline-flex items-center gap-2 cursor-pointer shadow-md"
+            >
+              <span>Garanta já sua vaga</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#E50914]" />
+            </a>
           </div>
         </div>
       </div>

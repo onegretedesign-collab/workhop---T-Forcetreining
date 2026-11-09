@@ -125,19 +125,19 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
         loading="lazy"
       />
 
-      {/* Top subtle dark gradient vignette for readable text (when in photo mode) */}
+      {/* Top subtle dark gradient vignette for readable badges (when in photo mode) */}
       {!showPurePhoto && (
         <div
-          className={`absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-[#0A0A0A]/95 via-[#0A0A0A]/70 to-transparent pointer-events-none transition-opacity duration-300 ${
+          className={`absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#0A0A0A]/90 via-[#0A0A0A]/40 to-transparent pointer-events-none transition-opacity duration-300 ${
             isRevealedOnMobile ? 'opacity-0' : 'opacity-100'
           }`}
         />
       )}
 
-      {/* Bottom dark gradient vignette for readable speaker name (when in photo mode) */}
+      {/* Bottom dark gradient vignette for readable speaker name and theme (when in photo mode) */}
       {!showPurePhoto && (
         <div
-          className={`absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/85 to-transparent pointer-events-none transition-opacity duration-300 ${
+          className={`absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent pointer-events-none transition-opacity duration-300 ${
             isRevealedOnMobile ? 'opacity-0' : 'opacity-100'
           }`}
         />
@@ -156,7 +156,7 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
             : (showPurePhoto ? 'opacity-0 hover:opacity-100' : 'opacity-100')
         }`}
       >
-        {/* Top Section: Watermark & Hook Quote */}
+        {/* Top Section: Watermark & Badges */}
         <div>
           <div className="flex items-center justify-between pb-2 text-[10px] font-mono tracking-widest uppercase">
             <span className="text-[#E50914] font-semibold flex items-center gap-1 bg-black/70 px-2.5 py-1 rounded-full border border-neutral-800/80 backdrop-blur-md">
@@ -199,14 +199,6 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
               </span>
             </div>
           </div>
-
-          {/* Hook Quote */}
-          <h4 className="mt-2 text-sm sm:text-base font-medium text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-            <span>{speaker.hookQuoteTop} </span>
-            <span className="text-[#E50914] font-bold underline decoration-[#E50914]/60 underline-offset-4">
-              {speaker.hookQuoteHighlight}
-            </span>
-          </h4>
         </div>
 
         {/* Center Section: Transparent open area */}
@@ -234,13 +226,23 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
             </span>
           )}
 
-          <div className="flex items-center justify-between text-xs text-neutral-300 mt-2 font-mono">
-            <span className="text-[11px] truncate max-w-[200px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-              {speaker.company}
+          <div className="flex items-end justify-between gap-2 text-xs text-neutral-300 mt-2 font-mono">
+            <span className="text-[11px] sm:text-[11.5px] text-neutral-200 leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] line-clamp-2 flex-1">
+              {speaker.role}
             </span>
-            <span className="text-[9px] text-neutral-400 uppercase tracking-widest bg-black/70 px-2 py-0.5 rounded-full border border-neutral-800/80 backdrop-blur-md">
+            <span className="text-[9px] text-neutral-400 uppercase tracking-widest bg-black/70 px-2 py-0.5 rounded-full border border-neutral-800/80 backdrop-blur-md shrink-0 self-end mb-0.5">
               T-FORCE '26
             </span>
+          </div>
+
+          {/* Tema da Sessão no Card */}
+          <div className="mt-2 pt-2 border-t border-white/15">
+            <span className="text-[9.5px] font-mono uppercase tracking-wider text-[#E50914] font-bold block drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              Tema da Sessão:
+            </span>
+            <p className="text-[11px] sm:text-xs font-semibold text-white leading-snug line-clamp-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] mt-0.5">
+              "{speaker.talkTitle}"
+            </p>
           </div>
 
           {/* Mobile indicator prompting tap/scroll to read content */}
@@ -304,8 +306,9 @@ export const SpeakerPosterCard: React.FC<SpeakerPosterCardProps> = ({
               <h3 className="text-xl font-extrabold text-white font-display tracking-tight leading-snug">
                 {speaker.name}
               </h3>
-              <p className="text-xs text-neutral-300 font-medium mt-0.5">
-                {speaker.role} · <span className="text-neutral-400">{speaker.company}</span>
+              <p className="text-xs text-neutral-200 font-medium mt-1">
+                <span className="text-[#E50914] font-mono text-[10px] uppercase font-bold mr-1">Atuação:</span>
+                {speaker.role}
               </p>
               {speaker.instagram && (
                 <span className="inline-flex items-center gap-1 text-xs font-bold text-[#E50914] font-mono mt-1">

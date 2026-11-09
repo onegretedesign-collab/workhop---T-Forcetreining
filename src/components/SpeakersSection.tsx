@@ -67,28 +67,33 @@ export const SpeakersSection: React.FC<SpeakersSectionProps> = ({ onOpenCheckout
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#E50914]/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Section Header */}
+        {/* Section Header (matches image_cdca0231.png) */}
         <motion.div
           variants={itemVariants}
-          className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12 sm:mb-16"
+          className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12 sm:mb-16"
         >
           <div>
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#E50914] font-semibold mb-2">
               <Sparkles className="w-4 h-4" />
               <span>Line-up Oficial · 6 Keynotes</span>
             </div>
-            {/* Title styled with Poppins and red period just like the video */}
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white font-display tracking-tight">
-              Palestrantes que <span className="text-[#E50914]">Inspiram.</span>
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white font-display tracking-tight leading-tight">
+              Palestrantes que <br className="hidden sm:inline" />
+              <span className="text-[#E50914]">Inspiram.</span>
             </h2>
             <p className="mt-3 text-sm sm:text-base text-neutral-400 max-w-xl">
               Role a tela ou toque no card para ler o conteúdo e ementa completa de cada palestrante.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-800 bg-neutral-900/60 text-xs font-mono font-medium text-neutral-300 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" />
-            <span>6 Palestrantes Confirmados</span>
+          <div className="flex items-center gap-3">
+            <a
+              href="#ingressos"
+              className="px-6 py-3 rounded-full border border-neutral-700 hover:border-[#E50914] text-neutral-200 hover:text-white font-mono font-bold text-xs uppercase tracking-widest transition-all bg-neutral-900/60 hover:bg-[#E50914]/15 shrink-0 flex items-center gap-2"
+            >
+              <span>Ver Ingressos Nominais</span>
+              <span className="text-[#E50914]">→</span>
+            </a>
           </div>
         </motion.div>
 
