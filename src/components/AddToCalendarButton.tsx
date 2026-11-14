@@ -35,7 +35,7 @@ export const AddToCalendarButton: React.FC<{ className?: string }> = ({ classNam
   const eventTitle = 'Performance 360º - 15hs - Academia Dragon';
   const eventLocation = 'Academia Dragon - Quirinópolis / Goiás';
   const eventDescription =
-    'Performance 360º: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples.\n\nPalestrantes confirmados: Personal Tiago Alves, Marcelo, Dr Guilherme Silverio, Jeriton, Nathálya Souza e Dra Leiliara Borges.\n\nLocal: Academia Dragon - Palco Principal\nInício pontual às 15:00.';
+    'Performance 360º: Hipertrofia, Hormonal, Nutrição, Tratamento de lesões de uma forma simples.\n\nPalestrantes confirmados: Personal Tiago Alves, Marcelo, Dr Guilherme Silverio, Jériton, Nathálya Souza e Dra Leiliara Borges.\n\nLocal: Academia Dragon - Palco Principal\nInício pontual às 15:00.';
 
   // Google Calendar URL (20 de Fevereiro, 15h00 às 21h00 BRT -> 18h00 às 00h00 UTC)
   const handleOpenGoogleCalendar = () => {

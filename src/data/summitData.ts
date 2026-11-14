@@ -141,7 +141,7 @@ export const SPEAKERS: Speaker[] = [
   },
   {
     id: "speaker-4",
-    name: "Jeriton",
+    name: "Jériton",
     instagram: "@jeritonperformance",
     role: "Analista do movimento/ Prevenção/ Performance e Retorno ao Esporte com segurança",
     company: "Analista do movimento/ Prevenção/ Performance e Retorno ao Esporte com segurança",
